@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify, request, session
 from utils.db import get_db_connection
 from utils.helpers import api_login_required, current_channel_id
-from app import socketio
+from extensions import socketio
+
 
 api_bp = Blueprint("api", __name__)
 

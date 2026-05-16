@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, session, request, flash
-from flask_socketio import SocketIO
+from extensions import socketio
 from config import Config
 from routes.streamer import streamer_bp
 from routes.admin import admin_bp
@@ -9,8 +9,8 @@ from routes.api import api_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
+socketio.init_app(app, cors_allowed_origins="*")  # bind SocketIO to the app
 
-socketio = SocketIO(app, cors_allowed_origins="*")
 
 app.register_blueprint(streamer_bp)
 app.register_blueprint(admin_bp, url_prefix="/admin")
@@ -318,4 +318,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    socketio.run(app, debug=app.config["DEBUG"], host="0.0.0.0", port=5000)
+    socketio.run(app, debug=app.config["DEBUG"], host="0.0.0.0", port=5001)
