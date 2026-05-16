@@ -1,0 +1,81 @@
+/* =============================================================
+   variables.css — design tokens
+   Every colour, size and font used in the app is defined here.
+   Light mode is the default.
+   Dark mode values are set on [data-theme="dark"].
+   ============================================================= */
+
+:root {
+  /* ---- Colours — light mode -------------------------------- */
+  --bg:           #f5f5f7;
+  --surface:      #ffffff;
+  --card:         #ffffff;
+  --border:       #e2e2e7;
+  --border-light: #f0f0f5;
+
+  --text:         #1a1a2e;
+  --text-secondary: #4a4a6a;
+  --muted:        #8888aa;
+
+  --accent:       #7c3aed;
+  --accent-hover: #6d28d9;
+  --accent-light: rgba(124, 58, 237, 0.08);
+
+  --live:         #dc2626;
+  --live-light:   rgba(220, 38, 38, 0.1);
+  --live-glow:    rgba(220, 38, 38, 0.3);
+
+  --success:      #16a34a;
+  --success-light: rgba(22, 163, 74, 0.1);
+
+  --warn:         #d97706;
+  --warn-light:   rgba(217, 119, 6, 0.1);
+
+  --danger:       #dc2626;
+  --danger-light: rgba(220, 38, 38, 0.1);
+
+  --info:         #2563eb;
+  --info-light:   rgba(37, 99, 235, 0.1);
+
+  /* ---- Shadows --------------------------------------------- */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow:     0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-lg:  0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.04);
+
+  /* ---- Typography ------------------------------------------ */
+  --font-display: 'Rajdhani', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+
+  /* ---- Sizing ---------------------------------------------- */
+  --sidebar-width:          220px;
+  --sidebar-width-collapsed: 56px;
+  --topbar-height:          56px;
+  --radius-sm:              6px;
+  --radius:                 10px;
+  --radius-lg:              16px;
+
+  /* ---- Transitions ----------------------------------------- */
+  --transition:      150ms ease;
+  --transition-slow: 300ms ease;
+}
+
+/* ---- Dark mode -------------------------------------------- */
+[data-theme="dark"] {
+  --bg:           #0d0f14;
+  --surface:      #14171f;
+  --card:         #1a1e28;
+  --border:       #252a38;
+  --border-light: #1e2330;
+
+  --text:           #e8eaf0;
+  --text-secondary: #9ca3be;
+  --muted:          #6b7280;
+
+  --accent:       #7c3aed;
+  --accent-hover: #8b5cf6;
+  --accent-light: rgba(124, 58, 237, 0.15);
+
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.3);
+  --shadow:     0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg:  0 10px 15px rgba(0,0,0,0.4);
+}

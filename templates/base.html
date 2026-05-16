@@ -12,6 +12,20 @@
 
   <!-- Main CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <!-- Base CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base/variables.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base/reset.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base/typography.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base/layout.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base/utilities.css') }}">
+
+  <!-- Component CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/navigation.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/buttons.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/cards.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/forms.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/badges.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/feedback.css') }}">
 
   <!-- Page specific CSS -->
   {% block styles %}{% endblock %}

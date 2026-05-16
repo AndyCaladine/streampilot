@@ -1,0 +1,112 @@
+/* =============================================================
+   buttons.css — all button variants
+   ============================================================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background var(--transition), color var(--transition),
+              border-color var(--transition), box-shadow var(--transition),
+              opacity var(--transition);
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Primary — filled accent */
+.btn--primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn--primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+/* Secondary — outlined */
+.btn--secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn--secondary:hover:not(:disabled) {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Danger */
+.btn--danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
+.btn--danger:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+/* Ghost — no background */
+.btn--ghost {
+  background: transparent;
+  color: var(--muted);
+  border-color: transparent;
+}
+.btn--ghost:hover:not(:disabled) {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+/* Twitch branded */
+.btn--twitch {
+  background: #9146ff;
+  color: #fff;
+  border-color: #9146ff;
+}
+.btn--twitch:hover:not(:disabled) {
+  background: #7c2fe0;
+  border-color: #7c2fe0;
+}
+
+/* Sizes */
+.btn--sm  { padding: 5px 10px; font-size: 12px; }
+.btn--lg  { padding: 12px 28px; font-size: 16px; }
+.btn--full { width: 100%; }
+.btn--icon { padding: 7px; border-radius: var(--radius-sm); }
+
+/* Button group — sits buttons side by side */
+.btn-group {
+  display: inline-flex;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.btn-group .btn {
+  border-radius: 0;
+  border: none;
+  border-right: 1px solid var(--border);
+}
+
+.btn-group .btn:last-child {
+  border-right: none;
+}
+
+.btn-group .btn.active {
+  background: var(--accent);
+  color: #fff;
+}

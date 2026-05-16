@@ -1,0 +1,27 @@
+/* =============================================================
+   overlay.css — OBS browser source overlay pages
+   Transparent background — OBS shows through.
+   ============================================================= */
+
+/* Force transparent background in OBS */
+html, body {
+  background: transparent !important;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.overlay-body {
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.overlay-stage {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}

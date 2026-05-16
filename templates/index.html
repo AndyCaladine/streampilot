@@ -4,13 +4,20 @@
 
 {% block body_class %}page-landing{% endblock %}
 
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/landing.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="landing-wrapper">
 
   <!-- Navigation -->
   <nav class="landing-nav">
     <div class="landing-nav__logo">
-      <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="StreamPilot" class="landing-nav__icon">
+      <img src="{{ url_for('static', filename='images/smalllogo.light.PNG') }}"
+          alt="StreamPilot" class="landing-nav__icon logo-light">
+      <img src="{{ url_for('static', filename='images/smalllogo.dark.PNG') }}"
+          alt="StreamPilot" class="landing-nav__icon logo-dark">
       <span class="landing-nav__wordmark">STREAM<span>PILOT</span></span>
     </div>
     <div class="landing-nav__links">
@@ -25,9 +32,12 @@
   <section class="landing-hero">
     <div class="landing-hero__content">
       <div class="landing-hero__logo">
-        <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="StreamPilot">
+        <img src="{{ url_for('static', filename='images/logo-light.PNG') }}"
+            alt="StreamPilot" class="logo-light">
+        <img src="{{ url_for('static', filename='images/logo-dark.PNG') }}"
+            alt="StreamPilot" class="logo-dark">
       </div>
-      <h1 class="landing-hero__title">STREAM<span>PILOT</span></h1>
+            <h1 class="landing-hero__title">STREAM<span>PILOT</span></h1>
       <p class="landing-hero__tagline">Your streaming cockpit. One tab. Everything you need.</p>
       <div class="landing-hero__actions">
         <a href="{{ url_for('registration.join') }}" class="btn btn--primary btn--lg">
@@ -53,37 +63,43 @@
         <div class="feature-card">
           <div class="feature-card__icon">📊</div>
           <h3>Live Dashboard</h3>
-          <p>Viewers, followers, subscribers and uptime at a glance. World clocks for your global audience.</p>
+          <p>Viewers, followers, subscribers and uptime at a glance.
+             World clocks for your global audience.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-card__icon">💬</div>
           <h3>Chat Management</h3>
-          <p>Monitor and moderate your chat in real time. Commands, filters and moderation tools built in.</p>
+          <p>Monitor and moderate your chat in real time.
+             Commands, filters and moderation tools built in.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-card__icon">🔔</div>
           <h3>Stream Alerts</h3>
-          <p>Beautiful follow, sub, raid and bits alerts sent directly to your OBS overlay.</p>
+          <p>Beautiful follow, sub, raid and bits alerts sent
+             directly to your OBS overlay.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-card__icon">🎬</div>
           <h3>Timed Panels</h3>
-          <p>Schedule information panels to appear on screen automatically throughout your stream.</p>
+          <p>Schedule information panels to appear on screen
+             automatically throughout your stream.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-card__icon">👥</div>
           <h3>Team Tools</h3>
-          <p>Invite mods and co-pilots. Everyone gets the right access for their role.</p>
+          <p>Invite mods and co-pilots. Everyone gets the right
+             access for their role.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-card__icon">🖥️</div>
           <h3>Desktop App</h3>
-          <p>Install StreamPilot as a desktop app. No browser tabs, no distractions. Just your cockpit.</p>
+          <p>Install StreamPilot as a desktop app. No browser tabs,
+             no distractions. Just your cockpit.</p>
         </div>
 
       </div>

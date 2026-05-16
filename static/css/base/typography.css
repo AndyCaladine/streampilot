@@ -1,0 +1,46 @@
+/* =============================================================
+   typography.css — text styles
+   ============================================================= */
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+}
+
+.text-muted     { color: var(--muted); }
+.text-secondary { color: var(--text-secondary); }
+.text-accent    { color: var(--accent); }
+.text-danger    { color: var(--danger); }
+.text-success   { color: var(--success); }
+.text-warn      { color: var(--warn); }
+.text-sm        { font-size: 13px; }
+.text-xs        { font-size: 11px; }
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.wordmark span {
+  color: var(--accent);
+}
