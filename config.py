@@ -29,3 +29,7 @@ class Config:
     # File uploads (panel images etc.) — not needed until Phase 4
     UPLOAD_FOLDER      = os.environ.get("UPLOAD_FOLDER", "static/uploads")
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB limit
+
+    # Admin portal IP whitelist
+    # Comma-separated list of allowed IPs — add VPN tunnel IP here for production
+    ADMIN_ALLOWED_IPS = os.environ.get("ADMIN_ALLOWED_IPS", "127.0.0.1")

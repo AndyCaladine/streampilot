@@ -304,3 +304,39 @@ CREATE TABLE IF NOT EXISTS beta_requests (
     reviewed_at  TEXT,
     reviewed_by  INTEGER REFERENCES admin_users(id)
 );
+
+-- -------------------------------------------------------------
+-- Overlay connections
+-- Tracks when each OBS browser source last connected.
+-- Used to show connection status in the settings page.
+-- Updated every time an overlay connects via WebSocket.
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS overlay_connections (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    channel_id       INTEGER NOT NULL REFERENCES channels(id),
+    overlay_type     TEXT    NOT NULL,
+    last_connected_at TEXT   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(channel_id, overlay_type)
+);
+
+-- -------------------------------------------------------------
+-- User preferences
+-- Stores per-user UI preferences as key/value pairs.
+-- This approach means new preferences never need schema changes.
+-- value is always stored as TEXT — cast in code as needed.
+--
+-- Keys in use:
+--   clock_format    — 24 | 12
+--   clock_visible   — true | false
+--   world_clocks    — JSON array of timezone strings
+--   theme           — dark | light | system
+--   colour_scheme   — default | purple | green | red
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_preferences (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL REFERENCES users(id),
+    preference TEXT    NOT NULL,
+    value      TEXT    NOT NULL,
+    updated_at TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, preference)
+);
