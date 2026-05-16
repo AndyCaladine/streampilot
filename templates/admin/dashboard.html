@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard — StreamPilot{% endblock %}
+{% block body_class %}page-admin{% endblock %}
+
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-shell">
+
+  <!-- Admin sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <span class="admin-sidebar__wordmark">STREAM<span>PILOT</span></span>
+      <span class="admin-sidebar__badge">Admin</span>
+    </div>
+    <nav class="admin-sidebar__nav">
+      <a href="{{ url_for('admin.dashboard') }}"
+         class="admin-nav-item {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+        Dashboard
+      </a>
+      <a href="{{ url_for('admin.beta_requests') }}"
+         class="admin-nav-item {% if request.endpoint == 'admin.beta_requests' %}active{% endif %}">
+        Beta Requests
+      </a>
+      <a href="{{ url_for('admin.beta_codes') }}"
+         class="admin-nav-item {% if request.endpoint == 'admin.beta_codes' %}active{% endif %}">
+        Beta Codes
+      </a>
+      <a href="{{ url_for('admin.users') }}"
+         class="admin-nav-item {% if request.endpoint == 'admin.users' %}active{% endif %}">
+        Users
+      </a>
+      {% if session.get('admin_role') == 'owner' %}
+      <a href="{{ url_for('admin.admin_users') }}"
+         class="admin-nav-item {% if request.endpoint == 'admin.admin_users' %}active{% endif %}">
+        Admin Users
+      </a>
+      {% endif %}
+    </nav>
+    <div class="admin-sidebar__footer">
+      <span class="admin-sidebar__user">{{ session.get('admin_username') }}</span>
+      <span class="admin-sidebar__role">{{ session.get('admin_role')|title }}</span>
+      <a href="{{ url_for('admin.logout') }}" class="admin-nav-item admin-nav-item--danger">
+        Log Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- Admin content -->
+  <div class="admin-content">
+    <div class="admin-page-header">
+      <h1 class="admin-page-title">{% block admin_title %}Dashboard{% endblock %}</h1>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash flash--{{ category }}">
+            <span>{{ message }}</span>
+            <button class="flash-close" onclick="this.parentElement.remove()">&#x2715;</button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block admin_content %}
+
+    <!-- Stats -->
+    <div class="admin-stats-row">
+      <div class="admin-stat-card">
+        <div class="admin-stat-card__value">{{ stats.total_users }}</div>
+        <div class="admin-stat-card__label">Total Users</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-card__value">{{ stats.total_channels }}</div>
+        <div class="admin-stat-card__label">Channels</div>
+      </div>
+      <div class="admin-stat-card admin-stat-card--warn">
+        <div class="admin-stat-card__value">{{ stats.pending_requests }}</div>
+        <div class="admin-stat-card__label">Pending Requests</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-card__value">{{ stats.active_beta_codes }}</div>
+        <div class="admin-stat-card__label">Active Beta Codes</div>
+      </div>
+    </div>
+
+    <!-- Quick links -->
+    <div class="admin-quick-links">
+      <a href="{{ url_for('admin.beta_requests') }}" class="btn btn--primary">
+        Review Beta Requests
+      </a>
+      <a href="{{ url_for('admin.beta_codes') }}" class="btn btn--secondary">
+        Manage Beta Codes
+      </a>
+      <a href="{{ url_for('admin.users') }}" class="btn btn--secondary">
+        View All Users
+      </a>
+    </div>
+
+    {% endblock %}
+  </div>
+
+</div>
+{% endblock %}

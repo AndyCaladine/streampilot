@@ -1,0 +1,22 @@
+{% extends "overlays/base.html" %}
+
+{% block content %}
+<!--
+  Panels overlay
+  This page lives inside OBS as a Browser Source.
+  It listens for 'panel_show' and 'panel_hide' WebSocket events
+  and displays timed information panels on screen.
+  Background is transparent — OBS shows through.
+-->
+<div class="overlay-stage" id="panelStage"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Pass the token and channel info to the overlay JS
+  const OVERLAY_TOKEN   = "{{ token }}";
+  const OVERLAY_TYPE    = "panels";
+  const OVERLAY_CHANNEL = {{ channel_id }};
+</script>
+<script src="{{ url_for('static', filename='js/overlays/panels.js') }}"></script>
+{% endblock %}

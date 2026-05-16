@@ -1,0 +1,59 @@
+{% extends "admin/dashboard.html" %}
+
+{% block admin_title %}Beta Requests{% endblock %}
+
+{% block admin_content %}
+<div class="admin-table-card">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Twitch</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Received</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for beta_request in requests %}
+      <tr>
+        <td>{{ beta_request.name }}</td>
+        <td>{{ beta_request.email }}</td>
+        <td>{{ beta_request.twitch_login or '—' }}</td>
+        <td class="admin-table__reason">{{ beta_request.reason }}</td>
+        <td>
+          <span class="admin-badge admin-badge--{{ beta_request.status }}">
+            {{ beta_request.status|title }}
+          </span>
+        </td>
+        <td>{{ beta_request.created_at }}</td>
+        <td>
+          {% if beta_request.status == 'pending' %}
+          <div class="admin-table__actions">
+            <form method="POST"
+                  action="{{ url_for('admin.approve_beta_request', request_id=beta_request.id) }}"
+                  style="display:inline;">
+              <button type="submit" class="btn btn--primary btn--sm">Approve</button>
+            </form>
+            <form method="POST"
+                  action="{{ url_for('admin.reject_beta_request', request_id=beta_request.id) }}"
+                  style="display:inline;">
+              <button type="submit" class="btn btn--danger btn--sm">Reject</button>
+            </form>
+          </div>
+          {% else %}
+            <span class="text-muted">{{ beta_request.reviewed_by_username or '—' }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="7" class="admin-table__empty">No beta requests yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

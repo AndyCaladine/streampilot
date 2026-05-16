@@ -1,0 +1,44 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Alerts — StreamPilot{% endblock %}
+{% block page_title %}Alerts{% endblock %}
+{% block page_subtitle %}Configure your stream alerts and OBS overlay{% endblock %}
+
+{% block page_content %}
+<div class="alerts-layout">
+
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Alert Settings</h2>
+    </div>
+    <div class="card__body" id="alertsList">
+      <p class="empty-state">Loading alert configuration...</p>
+    </div>
+  </div>
+
+  <!-- Test panel -->
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Test Alerts</h2>
+    </div>
+    <div class="card__body">
+      <p class="text-muted mb-16">
+        Fire a test alert to your OBS overlay to confirm everything
+        is set up correctly before going live.
+      </p>
+      <div class="test-buttons">
+        <button class="btn btn--secondary" data-test-alert="follow">Test Follow</button>
+        <button class="btn btn--secondary" data-test-alert="sub_t1">Test Sub</button>
+        <button class="btn btn--secondary" data-test-alert="raid">Test Raid</button>
+        <button class="btn btn--secondary" data-test-alert="bits">Test Bits</button>
+        <button class="btn btn--secondary" data-test-alert="gift_sub">Test Gift Sub</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+  <script src="{{ url_for('static', filename='js/pages/alerts.js') }}"></script>
+{% endblock %}

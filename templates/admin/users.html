@@ -1,0 +1,40 @@
+{% extends "admin/dashboard.html" %}
+
+{% block admin_title %}Users{% endblock %}
+
+{% block admin_content %}
+<div class="admin-table-card">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Display Name</th>
+        <th>Platform</th>
+        <th>Login</th>
+        <th>Tier</th>
+        <th>Joined</th>
+        <th>Last Login</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td>{{ user.display_name }}</td>
+        <td>
+          <span class="admin-badge admin-badge--{{ user.platform or 'unknown' }}">
+            {{ user.platform|title if user.platform else '—' }}
+          </span>
+        </td>
+        <td>{{ user.platform_login or '—' }}</td>
+        <td>{{ user.tier|title }}</td>
+        <td>{{ user.created_at }}</td>
+        <td>{{ user.platform_last_login or 'Never' }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" class="admin-table__empty">No users yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

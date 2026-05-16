@@ -1,0 +1,75 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Dashboard — StreamPilot{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Your stream at a glance{% endblock %}
+
+{% block page_content %}
+<div class="dashboard-grid">
+
+  <!-- Event feed -->
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Event Feed</h2>
+      <span class="card__badge" id="eventCount">0</span>
+    </div>
+    <div class="card__body">
+      <div class="event-feed" id="eventFeed">
+        <p class="empty-state">No events yet — go live to see activity here.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active goals -->
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Active Goals</h2>
+    </div>
+    <div class="card__body">
+      <div id="goalsFeed">
+        <p class="empty-state">No active goals.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent commands used -->
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Recent Commands</h2>
+    </div>
+    <div class="card__body">
+      <div id="recentCommands">
+        <p class="empty-state">No commands used yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay status -->
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Overlay Status</h2>
+    </div>
+    <div class="card__body">
+      <div class="overlay-status-list" id="overlayStatusList">
+        <div class="overlay-status-item">
+          <span class="overlay-status-item__name">Alerts</span>
+          <span class="overlay-status-item__status" id="overlayStatusAlerts">Checking...</span>
+        </div>
+        <div class="overlay-status-item">
+          <span class="overlay-status-item__name">Panels</span>
+          <span class="overlay-status-item__status" id="overlayStatusPanels">Checking...</span>
+        </div>
+        <div class="overlay-status-item">
+          <span class="overlay-status-item__name">Celebrations</span>
+          <span class="overlay-status-item__status" id="overlayStatusCelebrations">Checking...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+  <script src="{{ url_for('static', filename='js/pages/dashboard.js') }}"></script>
+{% endblock %}

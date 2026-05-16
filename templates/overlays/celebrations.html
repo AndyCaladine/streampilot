@@ -1,0 +1,23 @@
+{% extends "overlays/base.html" %}
+
+{% block content %}
+<!--
+  Celebrations overlay
+  This page lives inside OBS as a Browser Source.
+  It listens for 'celebrate' WebSocket events and displays
+  fireworks and confetti for follows, subs and raids.
+  Place this source at the TOP of your OBS source stack.
+  Background is transparent — OBS shows through.
+-->
+<div class="overlay-stage" id="celebrationStage"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Pass the token and channel info to the overlay JS
+  const OVERLAY_TOKEN   = "{{ token }}";
+  const OVERLAY_TYPE    = "celebrations";
+  const OVERLAY_CHANNEL = {{ channel_id }};
+</script>
+<script src="{{ url_for('static', filename='js/overlays/celebrations.js') }}"></script>
+{% endblock %}

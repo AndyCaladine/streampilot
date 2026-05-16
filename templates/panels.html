@@ -1,0 +1,30 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Panels — StreamPilot{% endblock %}
+{% block page_title %}Panels{% endblock %}
+{% block page_subtitle %}Schedule information panels to appear on your stream{% endblock %}
+
+{% block page_actions %}
+  <button class="btn btn--primary" id="newPanelBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    New Panel
+  </button>
+{% endblock %}
+
+{% block page_content %}
+<div class="card">
+  <div class="card__header">
+    <h2 class="card__title">Your Panels</h2>
+    <span class="card__badge" id="panelCount">0</span>
+  </div>
+  <div class="card__body" id="panelsList">
+    <p class="empty-state">No panels yet. Create your first one above.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+  <script src="{{ url_for('static', filename='js/pages/panels.js') }}"></script>
+{% endblock %}

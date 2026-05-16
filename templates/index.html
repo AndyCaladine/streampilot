@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}StreamPilot — Your Streaming Cockpit{% endblock %}
+
+{% block body_class %}page-landing{% endblock %}
+
+{% block content %}
+<div class="landing-wrapper">
+
+  <!-- Navigation -->
+  <nav class="landing-nav">
+    <div class="landing-nav__logo">
+      <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="StreamPilot" class="landing-nav__icon">
+      <span class="landing-nav__wordmark">STREAM<span>PILOT</span></span>
+    </div>
+    <div class="landing-nav__links">
+      <a href="#features">Features</a>
+      <a href="#beta">Beta</a>
+      <a href="{{ url_for('registration.beta') }}">Request Access</a>
+      <a href="{{ url_for('registration.join') }}" class="btn btn--primary">I Have a Code</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="landing-hero">
+    <div class="landing-hero__content">
+      <div class="landing-hero__logo">
+        <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="StreamPilot">
+      </div>
+      <h1 class="landing-hero__title">STREAM<span>PILOT</span></h1>
+      <p class="landing-hero__tagline">Your streaming cockpit. One tab. Everything you need.</p>
+      <div class="landing-hero__actions">
+        <a href="{{ url_for('registration.join') }}" class="btn btn--primary btn--lg">
+          I Have a Beta Code
+        </a>
+        <a href="{{ url_for('registration.beta') }}" class="btn btn--secondary btn--lg">
+          Request Access
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="landing-features" id="features">
+    <div class="landing-section">
+      <h2 class="landing-section__title">Everything in one place</h2>
+      <p class="landing-section__subtitle">
+        Stop juggling tabs. StreamPilot gives you everything you need
+        to run a professional stream from a single dashboard.
+      </p>
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-card__icon">📊</div>
+          <h3>Live Dashboard</h3>
+          <p>Viewers, followers, subscribers and uptime at a glance. World clocks for your global audience.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">💬</div>
+          <h3>Chat Management</h3>
+          <p>Monitor and moderate your chat in real time. Commands, filters and moderation tools built in.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">🔔</div>
+          <h3>Stream Alerts</h3>
+          <p>Beautiful follow, sub, raid and bits alerts sent directly to your OBS overlay.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">🎬</div>
+          <h3>Timed Panels</h3>
+          <p>Schedule information panels to appear on screen automatically throughout your stream.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">👥</div>
+          <h3>Team Tools</h3>
+          <p>Invite mods and co-pilots. Everyone gets the right access for their role.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">🖥️</div>
+          <h3>Desktop App</h3>
+          <p>Install StreamPilot as a desktop app. No browser tabs, no distractions. Just your cockpit.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Beta section -->
+  <section class="landing-beta" id="beta">
+    <div class="landing-section">
+      <h2 class="landing-section__title">Join the Beta</h2>
+      <p class="landing-section__subtitle">
+        StreamPilot is currently in private beta. A small group of streamers
+        are helping us shape the product before public launch.
+      </p>
+      <div class="beta-options">
+
+        <div class="beta-card">
+          <h3>Got a code?</h3>
+          <p>If you have received a beta access code, you are ready to go.</p>
+          <a href="{{ url_for('registration.join') }}" class="btn btn--primary">
+            Enter Your Code
+          </a>
+        </div>
+
+        <div class="beta-card">
+          <h3>Want in?</h3>
+          <p>Tell us about yourself and your stream. We will be in touch.</p>
+          <a href="{{ url_for('registration.beta') }}" class="btn btn--secondary">
+            Request Access
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div class="landing-footer__inner">
+      <span class="landing-footer__brand">STREAM<span>PILOT</span></span>
+      <span class="landing-footer__copy">&copy; 2026 StreamPilot. All rights reserved.</span>
+      <span class="landing-footer__domain">stream-pilot.co.uk</span>
+    </div>
+  </footer>
+
+</div>
+{% endblock %}

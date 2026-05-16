@@ -42,7 +42,7 @@ def alerts(token):
     if not channel_id:
         abort(403)
     return render_template(
-        "overlay_alerts.html",
+        "overlay/alerts.html",
         token=token,
         channel_id=channel_id
     )
@@ -63,7 +63,7 @@ def panels(token):
     if not channel_id:
         abort(403)
     return render_template(
-        "overlay_panels.html",
+        "overlays/panels.html",
         token=token,
         channel_id=channel_id
     )
@@ -84,7 +84,7 @@ def celebrations(token):
     if not channel_id:
         abort(403)
     return render_template(
-        "overlay_celebrations.html",
+        "overlay/celebrations.html",
         token=token,
         channel_id= channel_id
     )

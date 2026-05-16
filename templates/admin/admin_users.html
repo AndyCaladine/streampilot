@@ -1,0 +1,57 @@
+{% extends "admin/dashboard.html" %}
+
+{% block admin_title %}Admin Users{% endblock %}
+
+{% block admin_content %}
+
+  <div class="admin-page-actions">
+    <a href="{{ url_for('admin.create_admin_user') }}" class="btn btn--primary">
+      Create Admin User
+    </a>
+  </div>
+
+  <div class="admin-table-card">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Created By</th>
+          <th>Last Login</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for admin_user in admin_users %}
+        <tr>
+          <td>{{ admin_user.username }}</td>
+          <td>{{ admin_user.email }}</td>
+          <td>
+            <span class="admin-badge admin-badge--{{ admin_user.role }}">
+              {{ admin_user.role|title }}
+            </span>
+          </td>
+          <td>{{ admin_user.created_by_username or 'System' }}</td>
+          <td>{{ admin_user.last_login_at or 'Never' }}</td>
+          <td>
+            <span class="admin-badge {% if admin_user.active %}admin-badge--active{% else %}admin-badge--inactive{% endif %}">
+              {% if admin_user.active %}Active{% else %}Inactive{% endif %}
+            </span>
+          </td>
+          <td>
+            {% if admin_user.id != session.get('admin_id') and admin_user.active %}
+            <form method="POST"
+                  action="{{ url_for('admin.deactivate_admin_user', admin_user_id=admin_user.id) }}">
+              <button type="submit" class="btn btn--danger btn--sm">Deactivate</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% endblock %}

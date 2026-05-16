@@ -1,0 +1,82 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Settings — StreamPilot{% endblock %}
+{% block page_title %}Settings{% endblock %}
+{% block page_subtitle %}Manage your account and overlay connections{% endblock %}
+
+{% block page_content %}
+<div class="settings-layout">
+
+  <!-- Overlay URLs -->
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">OBS Overlay URLs</h2>
+    </div>
+    <div class="card__body">
+      <p class="text-muted mb-16">
+        Add each URL as a Browser Source in OBS. Set the width to 1920,
+        height to 1080, and tick transparent background.
+      </p>
+      <div id="overlayUrls">
+        <p class="empty-state">Loading overlay URLs...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay connection status -->
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Connection Status</h2>
+      <button class="btn btn--secondary btn--sm" id="refreshStatus">Refresh</button>
+    </div>
+    <div class="card__body" id="connectionStatus">
+      <p class="empty-state">Checking connections...</p>
+    </div>
+  </div>
+
+  <!-- Clock preferences -->
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Clock Settings</h2>
+    </div>
+    <div class="card__body">
+      <div class="form-group">
+        <label class="form-label">Clock Format</label>
+        <div class="btn-group">
+          <button class="btn btn--secondary btn--sm clock-format-btn active" data-format="24">24 Hour</button>
+          <button class="btn btn--secondary btn--sm clock-format-btn" data-format="12">12 Hour</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">World Clocks</label>
+        <div id="worldClocksList"></div>
+        <button class="btn btn--secondary btn--sm mt-8" id="addWorldClock">
+          Add World Clock
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Theme preferences -->
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Appearance</h2>
+    </div>
+    <div class="card__body">
+      <div class="form-group">
+        <label class="form-label">Theme</label>
+        <div class="btn-group">
+          <button class="btn btn--secondary btn--sm theme-btn" data-theme="light">Light</button>
+          <button class="btn btn--secondary btn--sm theme-btn" data-theme="dark">Dark</button>
+          <button class="btn btn--secondary btn--sm theme-btn" data-theme="system">System</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+  <script src="{{ url_for('static', filename='js/pages/settings.js') }}"></script>
+{% endblock %}

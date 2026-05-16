@@ -1,0 +1,53 @@
+{% extends "admin/dashboard.html" %}
+
+{% block admin_title %}Beta Codes{% endblock %}
+
+{% block admin_content %}
+
+  <!-- Generate code form -->
+  <div class="admin-form-card">
+    <h2 class="admin-form-card__title">Generate a Code</h2>
+    <form method="POST"
+          action="{{ url_for('admin.generate_beta_code') }}"
+          class="admin-inline-form">
+      <input type="text"
+             name="note"
+             class="form-input"
+             placeholder="Note e.g. Direct invite for RubbishGamerUK">
+      <button type="submit" class="btn btn--primary">Generate</button>
+    </form>
+  </div>
+
+  <!-- Codes table -->
+  <div class="admin-table-card">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Note</th>
+          <th>Created By</th>
+          <th>Created</th>
+          <th>Used By</th>
+          <th>Used At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for code in codes %}
+        <tr class="{% if code.used_at %}admin-table__row--used{% endif %}">
+          <td><code class="admin-code">{{ code.code }}</code></td>
+          <td>{{ code.note or '—' }}</td>
+          <td>{{ code.created_by_username or '—' }}</td>
+          <td>{{ code.created_at }}</td>
+          <td>{{ code.used_by_name or '—' }}</td>
+          <td>{{ code.used_at or '—' }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="admin-table__empty">No beta codes yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% endblock %}

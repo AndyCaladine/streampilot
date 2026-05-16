@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StreamPilot Overlay</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+  <!-- Overlay base CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/overlay.css') }}">
+
+  {% block styles %}{% endblock %}
+</head>
+
+<!-- transparent background — OBS will show through -->
+<body class="overlay-body">
+
+  {% block content %}{% endblock %}
+
+  <!-- Socket.IO -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+  <!-- Overlay base JS — connects to WebSocket and joins channel room -->
+  <script src="{{ url_for('static', filename='js/shared/overlay-base.js') }}"></script>
+
+  {% block scripts %}{% endblock %}
+
+</body>
+</html>
