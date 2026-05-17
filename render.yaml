@@ -4,8 +4,7 @@ services:
     runtime: python
     pythonVersion: "3.11.9"
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --worker-class geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 app:app
-    plan: starter
+    startCommand: gunicorn --worker-class sync -w 1 app:app    plan: starter
     disk:
       name: streampilot-data
       mountPath: /data
