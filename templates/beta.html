@@ -2,16 +2,23 @@
 
 {% block title %}Request Beta Access — StreamPilot{% endblock %}
 
-{% block body_class %}page-auth{% endblock %}
+{% block body_class %}page-landing{% endblock %}
+
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/landing.css') }}">
+{% endblock %}
 
 {% block content %}
+
+{% include 'partials/landing_nav.html' %}
+
 <div class="auth-wrapper">
 
   <div class="auth-card auth-card--wide">
 
-    <!-- Logo -->
     <div class="auth-card__logo">
-      <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="StreamPilot">
+      <img src="{{ url_for('static', filename='images/logo-light.PNG') }}" alt="StreamPilot" class="logo-light">
+      <img src="{{ url_for('static', filename='images/logo-dark.PNG') }}" alt="StreamPilot" class="logo-dark">
       <span class="auth-card__wordmark">STREAM<span>PILOT</span></span>
     </div>
 
@@ -21,7 +28,6 @@
       We review every request personally and will be in touch soon.
     </p>
 
-    <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
@@ -33,34 +39,18 @@
       {% endif %}
     {% endwith %}
 
-    <!-- Request form -->
     <form method="POST" action="{{ url_for('registration.beta') }}" class="auth-form">
 
       <div class="form-row">
         <div class="form-group">
           <label for="name" class="form-label">Your Name <span class="form-required">*</span></label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            class="form-input"
-            placeholder="Andy Caladine"
-            value="{{ form_data.get('name', '') }}"
-            required
-          >
+          <input type="text" id="name" name="name" class="form-input"
+                 placeholder="Andy Caladine" value="{{ form_data.get('name', '') }}" required>
         </div>
-
         <div class="form-group">
           <label for="email" class="form-label">Email Address <span class="form-required">*</span></label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            class="form-input"
-            placeholder="andy@example.com"
-            value="{{ form_data.get('email', '') }}"
-            required
-          >
+          <input type="email" id="email" name="email" class="form-input"
+                 placeholder="andy@example.com" value="{{ form_data.get('email', '') }}" required>
         </div>
       </div>
 
@@ -68,48 +58,28 @@
         <label for="twitch_login" class="form-label">Twitch Username</label>
         <div class="form-input-prefix">
           <span class="form-prefix">twitch.tv/</span>
-          <input
-            type="text"
-            id="twitch_login"
-            name="twitch_login"
-            class="form-input form-input--prefixed"
-            placeholder="rubbishgameruk"
-            value="{{ form_data.get('twitch_login', '') }}"
-          >
+          <input type="text" id="twitch_login" name="twitch_login"
+                 class="form-input form-input--prefixed" placeholder="rubbishgameruk"
+                 value="{{ form_data.get('twitch_login', '') }}">
         </div>
         <span class="form-hint">Optional but helps us understand your stream.</span>
       </div>
 
       <div class="form-group">
-        <label for="reason" class="form-label">
-          Why would you like beta access? <span class="form-required">*</span>
-        </label>
-        <textarea
-          id="reason"
-          name="reason"
-          class="form-textarea"
-          placeholder="Tell us about your stream, what tools you currently use, and what you are hoping StreamPilot will help you with..."
-          rows="5"
-          required
-        >{{ form_data.get('reason', '') }}</textarea>
-        <span class="form-hint">
-          The more detail the better — this helps us prioritise requests.
-        </span>
+        <label for="reason" class="form-label">Why would you like beta access? <span class="form-required">*</span></label>
+        <textarea id="reason" name="reason" class="form-textarea"
+                  placeholder="Tell us about your stream, what tools you currently use, and what you are hoping StreamPilot will help you with..."
+                  rows="5" required>{{ form_data.get('reason', '') }}</textarea>
+        <span class="form-hint">The more detail the better — this helps us prioritise requests.</span>
       </div>
 
-      <button type="submit" class="btn btn--primary btn--full">
-        Send Request
-      </button>
+      <button type="submit" class="btn btn--primary btn--full">Send Request</button>
 
     </form>
 
     <div class="auth-card__footer">
-      <p>Already have a code?
-        <a href="{{ url_for('registration.join') }}">Enter it here</a>
-      </p>
-      <p>
-        <a href="{{ url_for('index') }}">&larr; Back to home</a>
-      </p>
+      <p>Already have a code? <a href="{{ url_for('registration.join') }}">Enter it here</a></p>
+      <p><a href="{{ url_for('index') }}">&larr; Back to home</a></p>
     </div>
 
   </div>

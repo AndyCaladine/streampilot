@@ -19,3 +19,9 @@
 @import url('components/forms.css');
 @import url('components/badges.css');
 @import url('components/feedback.css');
+/* Logo light/dark toggle — applies globally */
+.logo-light { display: block; }
+.logo-dark  { display: none; }
+
+[data-theme="dark"] .logo-light { display: none; }
+[data-theme="dark"] .logo-dark  { display: block; }
