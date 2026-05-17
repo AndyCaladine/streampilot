@@ -28,6 +28,7 @@
       Enter the access code you received to create your StreamPilot account.
     </p>
 
+    <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
@@ -39,6 +40,7 @@
       {% endif %}
     {% endwith %}
 
+    <!-- Code entry form -->
     <form method="POST" action="{{ url_for('registration.join') }}" class="auth-form">
       <div class="form-group">
         <label for="code" class="form-label">Beta Access Code</label>
@@ -66,6 +68,7 @@
           <path d="M11.64 5.93h1.43v4.28h-1.43m3.93-4.28H17v4.28h-1.43M7 2L3.43 5.57v12.86h4.28V22l3.58-3.57h2.85L20.57 12V2m-1.43 9.29l-2.85 2.85h-2.86l-2.5 2.5v-2.5H7.71V3.43h11.43z"/>
         </svg>
       </button>
+
     </form>
 
     <div class="auth-card__footer">
