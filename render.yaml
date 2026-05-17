@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: streampilot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --worker-class eventlet -w 1 app:app
+    plan: starter
+    disk:
+      name: streampilot-data
+      mountPath: /data
+      sizeGB: 1
+
+envVars:
+  - key: FLASK_ENV
+    value: production
+  - key: SECRET_KEY
+    generateValue: true
+  - key: TWITCH_CLIENT_ID
+    sync: false
+  - key: TWITCH_CLIENT_SECRET
+    sync: false
+  - key: TWITCH_REDIRECT_URI
+    sync: false
+  - key: DATABASE_URL
+    value: /data/database.db
