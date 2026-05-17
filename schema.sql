@@ -302,7 +302,11 @@ CREATE TABLE IF NOT EXISTS beta_requests (
     status       TEXT    NOT NULL DEFAULT 'pending',
     created_at   TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     reviewed_at  TEXT,
-    reviewed_by  INTEGER REFERENCES admin_users(id)
+    reviewed_by  INTEGER REFERENCES admin_users(id),
+    streamer_tag      TEXT,
+    platform          TEXT,
+    consent_data      INTEGER NOT NULL DEFAULT 0,
+    consent_marketing INTEGER NOT NULL DEFAULT 0
 );
 
 -- -------------------------------------------------------------

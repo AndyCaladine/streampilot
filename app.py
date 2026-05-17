@@ -6,6 +6,9 @@ from routes.admin import admin_bp
 from routes.registration import registration_bp
 from routes.overlays import overlays_bp
 from routes.api import api_bp
+from datetime import datetime, timezone
+from utils.db import get_db_connection, close_db
+
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -24,6 +27,42 @@ from routes import ws_events  # noqa: F401
 # Close DB connection after every request
 from utils.db import close_db
 app.teardown_appcontext(close_db)
+
+# =============================================================
+# Inject user theme into every template
+# =============================================================
+
+@app.context_processor
+def inject_user_theme():
+    """
+    Makes current_user_theme available in every template automatically.
+    Logged-in users get their saved preference from the database.
+    Guests get 'light' — the inline script in base.html then overrides
+    this from localStorage if they previously chose dark mode.
+    """
+    theme = "light"
+
+    if session.get("user_id"):
+        try:
+            conn = get_db_connection()
+            row = conn.execute(
+                """
+                SELECT value FROM user_preferences
+                WHERE user_id = ? AND preference = 'theme'
+                """,
+                (session["user_id"],)
+            ).fetchone()
+            if row:
+                theme = row["value"]
+        except Exception:
+            pass  # Non-critical — fall back to light
+
+    return {"current_user_theme": theme}
+
+@app.context_processor
+def inject_now():
+    """Makes the current UTC datetime available in every template."""
+    return {"now": datetime.now(timezone.utc)}
 
 
 # =============================================================

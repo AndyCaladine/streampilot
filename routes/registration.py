@@ -16,37 +16,44 @@ registration_bp = Blueprint("registration", __name__)
 @registration_bp.route("/beta", methods=["GET", "POST"])
 def beta():
     """
-    Public Beta Page. 
-    GET - Shows the beta information page with two options:
-        1. Request access to beta form
-        2. Enter a beta code to register
-    
-    POST - handles the beta access requests for submits. 
-    Stores the request in the database for the admin to review. 
+    Waitlist request handler.
+    GET  — not used directly, form lives on index.html.
+    POST — handles waitlist form submission from the landing page.
+           Validates fields, checks for duplicate email, stores the
+           request and redirects back to the landing page with a
+           flash message.
     """
     if request.method == "POST":
-        name = request.form.get("name", "").strip()
+        first_name   = request.form.get("first_name", "").strip()
+        streamer_tag = request.form.get("streamer_tag", "").strip()
         email = request.form.get("email", "").strip().lower()
-        twitch_login = request.form.get("twitch_login", "").strip().lower()
+        platform = request.form.get("platform", "").strip()
         reason = request.form.get("reason", "").strip()
+        consent_data = 1 if request.form.get("consent_data") else 0
+        consent_marketing = 1 if request.form.get("consent_marketing") else 0
 
         errors = []
 
-        if not name:
+        if not first_name:
             errors.append("Your name is required.")
+        if not streamer_tag:
+            errors.append("Your streamer tag is required.")
         if not email:
             errors.append("Your email address is required.")
+        if not platform:
+            errors.append("Please select your primary platform.")
         if not reason:
-            errors.append("Please tell me why you would like access to the beta program")
+            errors.append("Please tell us why you'd be a good fit.")
+        if not consent_data:
+            errors.append("You must agree to us storing your details to process your application.")
 
         if errors:
             for error in errors:
                 flash(error, "error")
-            return render_template("beta.html", form_data=request.form)
-        
+            return redirect(url_for("index") + "#beta")
+
         conn = get_db_connection()
 
-        # Check to see if the email address entered has already requested access. 
         existing = conn.execute(
             "SELECT id FROM beta_requests WHERE email = ?",
             (email,)
@@ -54,23 +61,27 @@ def beta():
 
         if existing:
             conn.close()
-            flash("Thank you for your interest, We already have a beta request for that email address. I will be in touch soon", "info")
-            return render_template("beta.html", form_data=request.form)
-        
+            flash("We already have a waitlist application for that email address. We will be in touch soon.", "info")
+            return redirect(url_for("index") + "#beta")
+
         conn.execute(
             """
-            INSERT INTO beta_requests (name, email, twitch_login, reason)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO beta_requests
+                (name, email, streamer_tag, platform, reason,
+                 consent_data, consent_marketing)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-            (name, email, twitch_login or None, reason)
+            (first_name, email, streamer_tag, platform, reason,
+             consent_data, consent_marketing)
         )
         conn.commit()
         conn.close()
 
-        flash("Thanks! Your beta request has been received. I will be in touch very soon.", "success")
-        return redirect(url_for("registration.beta"))
-    
-    return render_template("beta.html", form_data={})
+        flash("You're on the list. We'll be in touch when the time is right.", "success")
+        return redirect(url_for("index") + "#beta")
+
+    # GET — redirect to landing page beta section
+    return redirect(url_for("index") + "#beta")
 
 @registration_bp.route("/join", methods=["GET", "POST"])
 def join():

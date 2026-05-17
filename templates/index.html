@@ -15,16 +15,42 @@
   <nav class="landing-nav">
     <div class="landing-nav__logo">
       <img src="{{ url_for('static', filename='images/smalllogo.light.PNG') }}"
-          alt="StreamPilot" class="landing-nav__icon logo-light">
+           alt="StreamPilot" class="landing-nav__icon logo-light">
       <img src="{{ url_for('static', filename='images/smalllogo.dark.PNG') }}"
-          alt="StreamPilot" class="landing-nav__icon logo-dark">
+           alt="StreamPilot" class="landing-nav__icon logo-dark">
       <span class="landing-nav__wordmark">STREAM<span>PILOT</span></span>
     </div>
     <div class="landing-nav__links">
       <a href="#features">Features</a>
       <a href="#beta">Beta</a>
-      <a href="{{ url_for('registration.beta') }}">Request Access</a>
-      <a href="{{ url_for('registration.join') }}" class="btn btn--primary">I Have a Code</a>
+      <span class="badge badge--danger landing-nav__beta-badge">
+        <span class="landing-nav__beta-dot"></span>
+        Private Beta
+      </span>
+
+      <!-- Theme toggle — shows current mode, click to switch -->
+      <button class="mode-toggle" id="landingThemeToggle" aria-label="Toggle theme">
+        <span class="mode-toggle__day">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          Day Mode
+        </span>
+        <span class="mode-toggle__night">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+          Night Flight
+        </span>
+      </button>
     </div>
   </nav>
 
@@ -33,19 +59,44 @@
     <div class="landing-hero__content">
       <div class="landing-hero__logo">
         <img src="{{ url_for('static', filename='images/logo-light.PNG') }}"
-            alt="StreamPilot" class="logo-light">
+             alt="StreamPilot" class="logo-light">
         <img src="{{ url_for('static', filename='images/logo-dark.PNG') }}"
-            alt="StreamPilot" class="logo-dark">
+             alt="StreamPilot" class="logo-dark">
       </div>
-            <h1 class="landing-hero__title">STREAM<span>PILOT</span></h1>
+      <h1 class="landing-hero__title">STREAM<span>PILOT</span></h1>
       <p class="landing-hero__tagline">Your streaming cockpit. One tab. Everything you need.</p>
       <div class="landing-hero__actions">
         <a href="{{ url_for('registration.join') }}" class="btn btn--primary btn--lg">
           I Have a Beta Code
         </a>
-        <a href="{{ url_for('registration.beta') }}" class="btn btn--secondary btn--lg">
-          Request Access
+        <a href="#beta" class="btn btn--secondary btn--lg">
+          Join the Waitlist
         </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Founder -->
+  <section class="landing-founder">
+    <div class="landing-section landing-section--narrow">
+      <div class="founder-card">
+        <div class="founder-card__avatar">A</div>
+        <div class="founder-card__body">
+          <div class="founder-card__meta">
+            <span class="founder-card__name">Andy</span>
+            <span class="founder-card__tag">
+              <a href="https://www.twitch.tv/rubbishgameruk" target="_blank" rel="noopener">@RubbishGamerUK</a>
+              &nbsp;·&nbsp; Founder
+            </span>
+          </div>
+          <p class="founder-card__quote">
+            I got tired of juggling 10+ tools just to run a broadcast. Overlays here, alerts
+            there, chat somewhere else — nothing talking to anything else. I&rsquo;m not a developer
+            who read a Reddit thread about streamers. <strong>I stream. I live this.</strong>
+            StreamPilot is the tool I always wished existed, and I&rsquo;m building it properly
+            so other streamers don&rsquo;t have to feel the same frustration.
+          </p>
+        </div>
       </div>
     </div>
   </section>
@@ -61,42 +112,67 @@
       <div class="features-grid">
 
         <div class="feature-card">
-          <div class="feature-card__icon">📊</div>
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="3" width="4" height="18"/>
+            </svg>
+          </div>
           <h3>Live Dashboard</h3>
           <p>Viewers, followers, subscribers and uptime at a glance.
              World clocks for your global audience.</p>
         </div>
 
         <div class="feature-card">
-          <div class="feature-card__icon">💬</div>
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            </svg>
+          </div>
           <h3>Chat Management</h3>
           <p>Monitor and moderate your chat in real time.
              Commands, filters and moderation tools built in.</p>
         </div>
 
         <div class="feature-card">
-          <div class="feature-card__icon">🔔</div>
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
+            </svg>
+          </div>
           <h3>Stream Alerts</h3>
           <p>Beautiful follow, sub, raid and bits alerts sent
              directly to your OBS overlay.</p>
         </div>
 
         <div class="feature-card">
-          <div class="feature-card__icon">🎬</div>
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
           <h3>Timed Panels</h3>
           <p>Schedule information panels to appear on screen
              automatically throughout your stream.</p>
         </div>
 
         <div class="feature-card">
-          <div class="feature-card__icon">👥</div>
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+          </div>
           <h3>Team Tools</h3>
           <p>Invite mods and co-pilots. Everyone gets the right
              access for their role.</p>
         </div>
 
         <div class="feature-card">
-          <div class="feature-card__icon">🖥️</div>
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
           <h3>Desktop App</h3>
           <p>Install StreamPilot as a desktop app. No browser tabs,
              no distractions. Just your cockpit.</p>
@@ -106,33 +182,127 @@
     </div>
   </section>
 
-  <!-- Beta section -->
+  <!-- Beta -->
   <section class="landing-beta" id="beta">
-    <div class="landing-section">
-      <h2 class="landing-section__title">Join the Beta</h2>
-      <p class="landing-section__subtitle">
-        StreamPilot is currently in private beta. A small group of streamers
-        are helping us shape the product before public launch.
-      </p>
-      <div class="beta-options">
+    <div class="landing-section landing-section--narrow">
 
-        <div class="beta-card">
-          <h3>Got a code?</h3>
-          <p>If you have received a beta access code, you are ready to go.</p>
-          <a href="{{ url_for('registration.join') }}" class="btn btn--primary">
-            Enter Your Code
-          </a>
-        </div>
-
-        <div class="beta-card">
-          <h3>Want in?</h3>
-          <p>Tell us about yourself and your stream. We will be in touch.</p>
-          <a href="{{ url_for('registration.beta') }}" class="btn btn--secondary">
-            Request Access
-          </a>
-        </div>
-
+      <!-- Closed banner -->
+      <div class="beta-closed-banner">
+        <div class="beta-closed-banner__icon">🔒</div>
+        <h2 class="beta-closed-banner__title">Private Beta — Closed</h2>
+        <p class="beta-closed-banner__body">
+          StreamPilot is currently in a hand-picked private beta with a small group of streamers.
+          This isn&rsquo;t a queue — it&rsquo;s a careful selection process. There will be a moment
+          when this opens up. That moment isn&rsquo;t yet.
+        </p>
+        <p class="beta-closed-banner__body">
+          If you have already been given a code, you are good to go.
+        </p>
+        <a href="{{ url_for('registration.join') }}" class="btn btn--primary">
+          I Have a Beta Code
+        </a>
       </div>
+
+      <!-- Waitlist — hidden after successful submission -->
+      {% set submitted = namespace(value=false) %}
+      {% for category, message in get_flashed_messages(with_categories=true) %}
+        {% if category == 'success' %}
+          {% set submitted.value = true %}
+        {% endif %}
+      {% endfor %}
+
+      {% if submitted.value %}
+
+        <!-- Success state -->
+        <div class="waitlist waitlist--success">
+          <div class="waitlist__success-icon">✓</div>
+          <h3 class="waitlist__title">You&rsquo;re on the list.</h3>
+          <p class="waitlist__subtitle">
+            Thanks for taking the time to apply properly — that already tells us something.
+            We&rsquo;ll be in touch when the time is right.
+          </p>
+        </div>
+
+      {% else %}
+
+        <!-- Waitlist form -->
+        <div class="waitlist">
+          <h3 class="waitlist__title">Join the Waitlist</h3>
+          <p class="waitlist__subtitle">
+            Tell us about yourself and your stream. When the time comes, this is where we start.
+          </p>
+
+          <div class="waitlist__warning">
+            <strong>A fair heads-up:</strong> I&rsquo;m one person building this alongside a
+            full-time job, a uni course, and actually streaming. If you need the next release
+            the moment it drops, the waitlist probably isn&rsquo;t for you. If you want to
+            help shape something properly built — read on.
+          </div>
+
+          <form class="waitlist__form" method="POST" action="{{ url_for('registration.beta') }}">
+            {{ form.hidden_tag() if form else '' }}
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="first_name">Your Name <span class="form-required">*</span></label>
+                <input class="form-input" type="text" id="first_name" name="first_name"
+                       placeholder="Andy" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="streamer_tag">Streamer Tag <span class="form-required">*</span></label>
+                <input class="form-input" type="text" id="streamer_tag" name="streamer_tag"
+                       placeholder="RubbishGamerUK" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="email">Email <span class="form-required">*</span></label>
+                <input class="form-input" type="email" id="email" name="email"
+                       placeholder="you@example.com" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="platform">Primary Platform <span class="form-required">*</span></label>
+                <select class="form-select" id="platform" name="platform" required>
+                  <option value="" disabled selected>Select platform</option>
+                  <option value="twitch">Twitch</option>
+                  <option value="youtube">YouTube</option>
+                  <option value="kick">Kick</option>
+                  <option value="multiple">Multiple</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group mb-16">
+              <label class="form-label" for="reason">Why do you think you&rsquo;d be a good fit? <span class="form-required">*</span></label>
+              <textarea class="form-textarea" id="reason" name="reason" rows="4"
+                        placeholder="Tell me about your stream, how you work, and why a private beta with a solo dev sounds like something you're up for — not something to complain about." required></textarea>
+              <span class="form-hint">This is the most important field. It&rsquo;s how we find the right people.</span>
+            </div>
+
+            <div class="form-group mb-16">
+              <label class="waitlist__consent">
+                <input type="checkbox" name="consent_data" required>
+                <span>I agree to my details being stored for the purpose of this beta application. <span class="form-required">*</span></span>
+              </label>
+            </div>
+
+            <div class="form-group mb-16">
+              <label class="waitlist__consent">
+                <input type="checkbox" name="consent_marketing">
+                <span>I&rsquo;d like to receive occasional updates about StreamPilot. No spam, ever.</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn--primary btn--full">
+              Submit Waitlist Application
+            </button>
+            <p class="waitlist__note">No spam. No newsletters. You&rsquo;ll only hear from us when it matters.</p>
+          </form>
+        </div>
+
+      {% endif %}
+
     </div>
   </section>
 
@@ -140,10 +310,29 @@
   <footer class="landing-footer">
     <div class="landing-footer__inner">
       <span class="landing-footer__brand">STREAM<span>PILOT</span></span>
-      <span class="landing-footer__copy">&copy; 2026 StreamPilot. All rights reserved.</span>
+      <span class="landing-footer__copy">
+        &copy; {{ now.year }} StreamPilot &mdash; Designed &amp; built by
+        <a href="https://andycaladine.co.uk" target="_blank" rel="noopener">Andy Caladine</a>
+      </span>
       <span class="landing-footer__domain">stream-pilot.co.uk</span>
     </div>
   </footer>
 
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    const toggle = document.getElementById("landingThemeToggle");
+    if (!toggle) return;
+
+    toggle.addEventListener("click", function () {
+      const current = document.documentElement.getAttribute("data-theme") || "light";
+      const next    = current === "light" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("sp_theme", next);
+    });
+  })();
+</script>
 {% endblock %}

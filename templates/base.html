@@ -1,9 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="{{ current_user_theme | default('light') }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}StreamPilot{% endblock %}</title>
+
+  <!-- Anti-flash theme script — must run before CSS loads -->
+  <script>
+    (function () {
+      var stored = localStorage.getItem("sp_theme");
+      var current = document.documentElement.getAttribute("data-theme");
+      if (current === "light" && stored === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+      localStorage.setItem("sp_theme", document.documentElement.getAttribute("data-theme"));
+    })();
+  </script>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">

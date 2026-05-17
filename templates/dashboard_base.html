@@ -210,7 +210,7 @@
         </div>
 
         <!-- Theme toggle -->
-        <button class="topbar__icon-btn" id="themeToggle" aria-label="Toggle theme">
+        <button class="topbar__icon-btn" id="themeToggle" data-logged-in="{{ 'true' if session.user_id else 'false' }}" aria-label="Toggle theme">
           <!-- Sun icon — shown in dark mode -->
           <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
             <circle cx="12" cy="12" r="5"/>

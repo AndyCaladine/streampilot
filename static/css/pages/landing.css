@@ -3,6 +3,7 @@
    index.html, join.html, beta.html, select_account.html
    ============================================================= */
 
+
 /* ---- Landing wrapper -------------------------------------- */
 .landing-wrapper {
   min-height: 100vh;
@@ -10,6 +11,7 @@
   flex-direction: column;
   background: var(--bg);
 }
+
 
 /* ---- Landing nav ----------------------------------------- */
 .landing-nav {
@@ -46,7 +48,7 @@
 }
 
 .landing-nav__wordmark span {
-  color: var(--accent);
+  color: var(--brand);
 }
 
 .landing-nav__links {
@@ -67,13 +69,88 @@
   color: var(--accent);
 }
 
+/* Nav beta badge */
+.landing-nav__beta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.landing-nav__beta-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--danger);
+  flex-shrink: 0;
+  animation: breathe 2.5s ease-in-out infinite;
+}
+
+/* Override badge colour in dark mode */
+[data-theme="dark"] .landing-nav__beta-badge.badge--danger {
+  background: rgba(249, 115, 22, 0.15) !important;
+  border-color: rgba(249, 115, 22, 0.3) !important;
+  color: #f97316 !important;
+}
+
+[data-theme="dark"] .landing-nav__beta-dot {
+  background: #f97316 !important;
+}
+
+
+/* ---- Mode toggle — Day Mode / Night Flight ---------------- */
+.mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color var(--transition),
+              background var(--transition),
+              color var(--transition);
+  white-space: nowrap;
+}
+
+.mode-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+/* Day Mode label — shown in light mode, hidden in dark */
+.mode-toggle__day {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Night Flight label — hidden in light mode, shown in dark */
+.mode-toggle__night {
+  display: none;
+  align-items: center;
+  gap: 5px;
+}
+
+[data-theme="dark"] .mode-toggle__day   { display: none; }
+[data-theme="dark"] .mode-toggle__night { display: inline-flex; }
+
+
 /* ---- Hero ------------------------------------------------- */
 .landing-hero {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 80px 40px;
+  padding: 100px 40px;
   text-align: center;
   background: radial-gradient(
     ellipse at 50% 0%,
@@ -90,20 +167,6 @@
   gap: 24px;
 }
 
-.landing-hero {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 100px 40px;
-  text-align: center;
-  background: radial-gradient(
-    ellipse at 50% 0%,
-    var(--accent-light) 0%,
-    transparent 70%
-  );
-}
-
 .landing-hero__title {
   font-family: var(--font-display);
   font-size: 56px;
@@ -114,7 +177,7 @@
 }
 
 .landing-hero__title span {
-  color: var(--accent);
+  color: var(--brand);
 }
 
 .landing-hero__tagline {
@@ -131,6 +194,82 @@
   justify-content: center;
 }
 
+
+/* ---- Founder card ---------------------------------------- */
+.landing-founder {
+  padding: 0 40px 64px;
+}
+
+.founder-card {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+.founder-card__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--accent-hover);
+}
+
+.founder-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+
+.founder-card__name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.3px;
+}
+
+.founder-card__tag {
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.founder-card__tag a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.founder-card__tag a:hover {
+  text-decoration: underline;
+}
+
+.founder-card__quote {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.founder-card__quote strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+
 /* ---- Sections -------------------------------------------- */
 .landing-features,
 .landing-beta {
@@ -138,7 +277,7 @@
 }
 
 .landing-features {
-  background: var(--surface);
+  background: var(--bg);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
@@ -146,6 +285,10 @@
 .landing-section {
   max-width: 1000px;
   margin: 0 auto;
+}
+
+.landing-section--narrow {
+  max-width: 720px;
 }
 
 .landing-section__title {
@@ -166,6 +309,7 @@
   line-height: 1.6;
 }
 
+
 /* ---- Features grid --------------------------------------- */
 .features-grid {
   display: grid;
@@ -174,7 +318,7 @@
 }
 
 .feature-card {
-  background: var(--card);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px;
@@ -187,8 +331,13 @@
 }
 
 .feature-card__icon {
-  font-size: 28px;
   margin-bottom: 12px;
+}
+
+.feature-card__icon svg {
+  width: 32px;
+  height: 32px;
+  color: var(--accent);
 }
 
 .feature-card h3 {
@@ -204,6 +353,7 @@
   color: var(--text-secondary);
   line-height: 1.6;
 }
+
 
 /* ---- Beta section ---------------------------------------- */
 .beta-options {
@@ -239,6 +389,156 @@
   line-height: 1.5;
 }
 
+.waitlist__consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.waitlist__consent input[type="checkbox"] {
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.waitlist--success {
+  text-align: center;
+  padding: 48px 32px;
+}
+
+.waitlist__success-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--accent-light);
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--accent);
+  margin: 0 auto 16px;
+}
+
+
+/* ---- Beta closed banner ---------------------------------- */
+.beta-closed-banner {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  text-align: center;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.beta-closed-banner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+}
+
+.beta-closed-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, var(--accent-light) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.beta-closed-banner__icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.beta-closed-banner__title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.beta-closed-banner__body {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  max-width: 480px;
+  margin: 0 auto 12px;
+}
+
+.beta-closed-banner .btn {
+  margin-top: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ---- Waitlist -------------------------------------------- */
+.waitlist {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.waitlist__title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.waitlist__subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.waitlist__warning {
+  background: var(--accent-light);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.waitlist__warning strong {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.waitlist__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.waitlist__note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+
+
 /* ---- Footer ---------------------------------------------- */
 .landing-footer {
   background: var(--surface);
@@ -265,7 +565,7 @@
 }
 
 .landing-footer__brand span {
-  color: var(--accent);
+  color: var(--brand);
 }
 
 .landing-footer__copy,
@@ -273,6 +573,16 @@
   font-size: 13px;
   color: var(--muted);
 }
+
+.landing-footer__copy a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.landing-footer__copy a:hover {
+  text-decoration: underline;
+}
+
 
 /* ---- Auth pages — join, beta, select account ------------- */
 .page-auth {
@@ -329,7 +639,7 @@
 }
 
 .auth-card__wordmark span {
-  color: var(--accent);
+  color: var(--brand);
 }
 
 .auth-card__title {
@@ -373,6 +683,7 @@
 .auth-card__footer a:hover {
   text-decoration: underline;
 }
+
 
 /* ---- Account picker -------------------------------------- */
 .account-picker {
@@ -438,12 +749,14 @@
   flex-shrink: 0;
 }
 
-/* Dark mode logo swap */
+
+/* ---- Dark mode logo swap --------------------------------- */
 .logo-light { display: block; }
 .logo-dark  { display: none; }
 
 [data-theme="dark"] .logo-light { display: none; }
 [data-theme="dark"] .logo-dark  { display: block; }
+
 
 /* ---- Responsive ------------------------------------------ */
 @media (max-width: 768px) {
@@ -455,5 +768,9 @@
   .beta-options { grid-template-columns: 1fr; }
   .landing-features,
   .landing-beta { padding: 48px 20px; }
+  .landing-founder { padding: 0 20px 48px; }
+  .founder-card { flex-direction: column; gap: 14px; }
+  .waitlist { padding: 20px; }
+  .beta-closed-banner { padding: 28px 20px; }
   .auth-card { padding: 28px 20px; }
 }
