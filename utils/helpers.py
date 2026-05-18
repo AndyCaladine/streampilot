@@ -88,7 +88,7 @@ def current_user_id():
 
 def current_channel_id():
     """Return the logged-in streamer's channel ID."""
-    return session.get("channel_id")
+    return session.get("active_channel_id")
 
 
 def current_admin_id():
