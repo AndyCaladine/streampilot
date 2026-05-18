@@ -1,4 +1,3 @@
-from gevent import monkey
 import sqlite3
 import psycopg2
 import psycopg2.extras
@@ -15,7 +14,7 @@ def get_db_connection():
                 cursor_factory=psycopg2.extras.RealDictCursor
             )
             conn.autocommit = False
-            g.db = conn
+            g.db = _PostgresConnectionWrapper(conn)
             g.db_type = "postgres"
         else:
             conn = sqlite3.connect(
@@ -28,6 +27,32 @@ def get_db_connection():
             g.db_type = "sqlite"
     
     return g.db
+
+
+class _PostgresConnectionWrapper:
+    """
+    Wraps a psycopg2 connection to behave like SQLite's connection.
+    Allows conn.execute() and conn.commit() to work the same way.
+    """
+    def __init__(self, conn):
+        self._conn = conn
+
+    def execute(self, sql, params=None):
+        cursor = self._conn.cursor()
+        cursor.execute(sql, params or ())
+        return cursor
+
+    def commit(self):
+        self._conn.commit()
+
+    def close(self):
+        self._conn.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
 
 def get_db_type():
