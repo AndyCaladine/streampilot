@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_PATH     = os.environ.get("DATABASE_URL", os.path.join("instance", "database.db"))
+DB_PATH = os.environ.get("DATABASE_URL") or os.path.join("instance", "database.db")
 SCHEMA_PATH = "schema.sql"
 
 def init_db():

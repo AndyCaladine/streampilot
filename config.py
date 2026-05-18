@@ -12,9 +12,8 @@ class Config:
     # Database
     # SQLite in development — file lives in instance/ (gitignored)
     # Set DATABASE_URL to a PostgreSQL string for production
-    DATABASE_URL = os.environ.get(
-        "DATABASE_URL",
-        os.path.join(os.path.dirname(__file__), "instance", "database.db")
+    DATABASE_URL = os.environ.get("DATABASE_URL") or os.path.join(
+        os.path.dirname(__file__), "instance", "database.db"
     )
 
     # Twitch OAuth

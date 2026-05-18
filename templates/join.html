@@ -28,17 +28,6 @@
       Enter the access code you received to create your StreamPilot account.
     </p>
 
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="flash flash--{{ category }}">
-            <span>{{ message }}</span>
-            <button class="flash-close" onclick="this.parentElement.remove()">&#x2715;</button>
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
 
     <!-- Code entry form -->
     <form method="POST" action="{{ url_for('registration.join') }}" class="auth-form">
@@ -49,16 +38,15 @@
           id="code"
           name="code"
           class="form-input form-input--code"
-          placeholder="e.g. ABC12345"
-          maxlength="8"
+          placeholder="Enter Beta Code"
+          minlength="8"
           autocomplete="off"
-          autocapitalize="characters"
+          autocapitalize="off"
           spellcheck="false"
           required
         >
         <span class="form-hint">
-          Codes are 8 characters — letters and numbers only.
-          Check your email or Discord message from StreamPilot.
+          Check your email or Discord message from StreamPilot for your code.
         </span>
       </div>
 

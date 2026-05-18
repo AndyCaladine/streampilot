@@ -70,7 +70,7 @@ def beta():
 @registration_bp.route("/join", methods=["GET", "POST"])
 def join():
     if request.method == "POST":
-        code = request.form.get("code", "").strip().upper()
+        code = request.form.get("code", "").strip()
 
         if not code:
             flash("Please enter your beta access code", "error")
