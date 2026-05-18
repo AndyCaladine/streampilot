@@ -1,13 +1,14 @@
 CREATE TABLE users (
     id            SERIAL PRIMARY KEY,
     email         TEXT    UNIQUE,
+    full_name     TEXT,
+    chosen_name   TEXT,
     display_name  TEXT    NOT NULL,
     avatar_url    TEXT,
     tier          TEXT    NOT NULL DEFAULT 'free',
     created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_login_at TIMESTAMPTZ
 );
-
 CREATE TABLE user_platforms (
     id                    SERIAL PRIMARY KEY,
     user_id               INTEGER NOT NULL REFERENCES users(id),

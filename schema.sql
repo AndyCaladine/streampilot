@@ -30,6 +30,8 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS users (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
     email         TEXT    UNIQUE,
+    full_name     TEXT,
+    chosen_name   TEXT,
     display_name  TEXT    NOT NULL,
     avatar_url    TEXT,
     tier          TEXT    NOT NULL DEFAULT 'free',
