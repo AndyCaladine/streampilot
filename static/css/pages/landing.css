@@ -1052,8 +1052,18 @@
 
 /* ---- Responsive ------------------------------------------ */
 @media (max-width: 768px) {
-  .landing-nav          { padding: 14px 20px; }
-  .landing-nav__links   { gap: 12px; }
+  .landing-nav          { padding: 12px 16px; }
+  .landing-nav__links   { gap: 10px; }
+
+  /* Hide text nav links and beta badge on mobile */
+  .landing-nav__links > a:not(.btn),
+  .landing-nav__beta-badge { display: none; }
+
+  /* Icon-only mode toggle on mobile — hide the text label */
+  .mode-toggle          { padding: 6px 8px; }
+  .mode-toggle__day  span:not(svg),
+  .mode-toggle__night span:not(svg) { display: none; }
+
   .landing-hero         { padding: 60px 20px; }
   .landing-hero__title  { font-size: 40px; }
   .features-grid        { grid-template-columns: 1fr; }
