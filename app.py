@@ -122,6 +122,7 @@ def callback():
     ).fetchone()
 
     if existing_user:
+        # ---- Returning user — update tokens and last login --
         user_id = existing_user["id"]
         conn.execute(
             f"""
@@ -149,9 +150,16 @@ def callback():
             (user_id,)
         )
         conn.commit()
+
     else:
-        beta_code = session.get("beta_code")
-        if not beta_code:
+        # ---- New user — link Twitch to the account created on /join
+        pending_user_id = session.get("pending_user_id")
+        beta_code       = session.get("beta_code")
+
+        print(f"DEBUG pending_user_id: {pending_user_id}")
+        print(f"DEBUG beta_code: {beta_code}")
+
+        if not pending_user_id or not beta_code:
             conn.close()
             flash("You need a beta access code to create an account.", "error")
             return redirect(url_for("registration.join"))
@@ -171,19 +179,7 @@ def callback():
             flash("Your beta code is no longer valid. Please contact us for a new one.", "error")
             return redirect(url_for("registration.join"))
 
-        cur = conn.execute(
-            f"""
-            INSERT INTO users (display_name, avatar_url, email)
-            VALUES ({p}, {p}, {p})
-            """,
-            (
-                twitch_user["display_name"],
-                twitch_user.get("profile_image_url"),
-                twitch_user.get("email"),
-            )
-        )
-        conn.commit()
-        user_id = cur.lastrowid
+        user_id = pending_user_id
 
         conn.execute(
             f"""
@@ -222,8 +218,11 @@ def callback():
             (user_id, beta_code)
         )
         conn.commit()
+
+        session.pop("pending_user_id", None)
         session.pop("beta_code", None)
 
+    # ---- Build available accounts for session ---------------
     own_channel = conn.execute(
         f"""
         SELECT c.id as channel_id, up.platform_display_name as display_name,

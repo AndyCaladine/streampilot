@@ -69,7 +69,6 @@
   color: var(--accent);
 }
 
-/* Nav beta badge */
 .landing-nav__beta-badge {
   display: inline-flex;
   align-items: center;
@@ -86,7 +85,6 @@
   animation: breathe 2.5s ease-in-out infinite;
 }
 
-/* Override badge colour in dark mode */
 [data-theme="dark"] .landing-nav__beta-badge.badge--danger {
   background: rgba(249, 115, 22, 0.15) !important;
   border-color: rgba(249, 115, 22, 0.3) !important;
@@ -98,7 +96,7 @@
 }
 
 
-/* ---- Mode toggle — Day Mode / Night Flight ---------------- */
+/* ---- Mode toggle ----------------------------------------- */
 .mode-toggle {
   display: inline-flex;
   align-items: center;
@@ -126,14 +124,12 @@
   background: var(--accent-light);
 }
 
-/* Day Mode label — shown in light mode, hidden in dark */
 .mode-toggle__day {
   display: inline-flex;
   align-items: center;
   gap: 5px;
 }
 
-/* Night Flight label — hidden in light mode, shown in dark */
 .mode-toggle__night {
   display: none;
   align-items: center;
@@ -389,6 +385,60 @@
   line-height: 1.5;
 }
 
+
+/* ---- Waitlist -------------------------------------------- */
+.waitlist {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.waitlist__title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.waitlist__subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.waitlist__warning {
+  background: var(--accent-light);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.waitlist__warning strong {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.waitlist__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.waitlist__note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+
 .waitlist__consent {
   display: flex;
   align-items: flex-start;
@@ -482,60 +532,6 @@
   margin-top: 8px;
   position: relative;
   z-index: 1;
-}
-
-
-/* ---- Waitlist -------------------------------------------- */
-.waitlist {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 28px 32px;
-  box-shadow: var(--shadow-sm);
-}
-
-.waitlist__title {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-
-.waitlist__subtitle {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-
-.waitlist__warning {
-  background: var(--accent-light);
-  border: 1px solid rgba(124, 58, 237, 0.2);
-  border-radius: var(--radius-sm);
-  padding: 12px 16px;
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-.waitlist__warning strong {
-  color: var(--accent);
-  font-weight: 500;
-}
-
-.waitlist__form {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.waitlist__note {
-  text-align: center;
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 10px;
 }
 
 
@@ -685,6 +681,302 @@
 }
 
 
+/* ---- Registration form (join.html) ----------------------- */
+.reg-form {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  animation: fadeSlideIn 0.35s ease;
+}
+
+.reg-form.visible {
+  display: flex;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reg-section-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: -8px;
+}
+
+.reg-form__privacy-note {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.reg-form__privacy-note a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.reg-form__privacy-note a:hover {
+  text-decoration: underline;
+}
+
+
+/* ---- Input with indicator icon ---------------------------- */
+.form-input-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-input-icon .form-input {
+  padding-right: 36px;
+}
+
+.form-input-icon__indicator {
+  position: absolute;
+  right: 10px;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.form-input-icon__indicator.visible {
+  opacity: 1;
+}
+
+
+/* ---- Password strength meter ------------------------------ */
+.password-strength {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.strength-bars {
+  display: flex;
+  gap: 4px;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background 0.3s ease;
+}
+
+.strength-bar.active-weak   { background: var(--danger); }
+.strength-bar.active-fair   { background: var(--warn); }
+.strength-bar.active-good   { background: var(--success); }
+.strength-bar.active-strong { background: var(--accent); }
+
+.strength-rules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+}
+
+.strength-rule {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.strength-rule.met {
+  color: var(--accent);
+}
+
+.strength-rule svg {
+  flex-shrink: 0;
+}
+
+
+/* ---- Code validated badge --------------------------------- */
+.code-validated {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--success-light);
+  border: 1px solid var(--success);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--success);
+  font-weight: 500;
+}
+
+
+/* ---- Consent checkboxes ----------------------------------- */
+.consent-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.consent-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.consent-item input[type="checkbox"] {
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.consent-item a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.consent-item a:hover {
+  text-decoration: underline;
+}
+
+.consent-required {
+  color: var(--danger);
+  margin-left: 2px;
+}
+
+
+/* ---- Privacy modal ---------------------------------------- */
+.privacy-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.privacy-modal-overlay.open {
+  display: flex;
+}
+
+.privacy-modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.privacy-modal__title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.privacy-modal__subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.privacy-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition), background var(--transition);
+}
+
+.privacy-modal__close:hover {
+  color: var(--text);
+  background: var(--border-light);
+}
+
+.privacy-modal__accept {
+  margin-top: 24px;
+  width: 100%;
+}
+
+.privacy-section {
+  margin-bottom: 20px;
+}
+
+.privacy-section__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.privacy-section__title svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.privacy-section__body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+.privacy-section__body ul {
+  margin: 6px 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.privacy-pill {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 7px;
+  margin: 2px 2px;
+}
+
+[data-theme="dark"] .privacy-pill {
+  border-color: rgba(249, 115, 22, 0.2);
+}
+
+
 /* ---- Account picker -------------------------------------- */
 .account-picker {
   display: flex;
@@ -760,17 +1052,17 @@
 
 /* ---- Responsive ------------------------------------------ */
 @media (max-width: 768px) {
-  .landing-nav { padding: 14px 20px; }
-  .landing-nav__links { gap: 12px; }
-  .landing-hero { padding: 60px 20px; }
-  .landing-hero__title { font-size: 40px; }
-  .features-grid { grid-template-columns: 1fr; }
-  .beta-options { grid-template-columns: 1fr; }
+  .landing-nav          { padding: 14px 20px; }
+  .landing-nav__links   { gap: 12px; }
+  .landing-hero         { padding: 60px 20px; }
+  .landing-hero__title  { font-size: 40px; }
+  .features-grid        { grid-template-columns: 1fr; }
+  .beta-options         { grid-template-columns: 1fr; }
   .landing-features,
-  .landing-beta { padding: 48px 20px; }
-  .landing-founder { padding: 0 20px 48px; }
-  .founder-card { flex-direction: column; gap: 14px; }
-  .waitlist { padding: 20px; }
-  .beta-closed-banner { padding: 28px 20px; }
-  .auth-card { padding: 28px 20px; }
+  .landing-beta         { padding: 48px 20px; }
+  .landing-founder      { padding: 0 20px 48px; }
+  .founder-card         { flex-direction: column; gap: 14px; }
+  .waitlist             { padding: 20px; }
+  .beta-closed-banner   { padding: 28px 20px; }
+  .auth-card            { padding: 28px 20px; }
 }
