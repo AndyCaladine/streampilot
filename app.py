@@ -62,8 +62,56 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/auth/login")
+@app.route("/auth/login", methods=["GET", "POST"])
 def login():
+    if session.get("user_id"):
+        return redirect(url_for("streamer.dashboard"))
+
+    if request.method == "POST":
+        from routes.registration import verify_password
+        email    = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
+        if not email or not password:
+            flash("Please enter your email and password.", "error")
+            return render_template("login.html")
+
+        conn = get_db_connection()
+        p    = placeholder()
+
+        user = conn.execute(
+            f"SELECT id, display_name FROM users WHERE email = {p}",
+            (email,)
+        ).fetchone()
+
+        if not user:
+            conn.close()
+            flash("Email or password is incorrect.", "error")
+            return render_template("login.html")
+
+        stored = conn.execute(
+            f"""
+            SELECT value FROM user_preferences
+            WHERE user_id = {p} AND preference = 'password_hash'
+            """,
+            (user["id"],)
+        ).fetchone()
+
+        if not stored or not verify_password(stored["value"], password):
+            conn.close()
+            flash("Email or password is incorrect.", "error")
+            return render_template("login.html")
+
+        # ---- Credentials valid — now send to Twitch OAuth ---
+        conn.close()
+        session["pending_user_id"] = user["id"]
+        return redirect(url_for("twitch_auth"))
+
+    return render_template("login.html")
+
+
+@app.route("/auth/twitch")
+def twitch_auth():
     import urllib.parse
     params = {
         "client_id":     app.config["TWITCH_CLIENT_ID"],
@@ -155,9 +203,6 @@ def callback():
         # ---- New user — link Twitch to the account created on /join
         pending_user_id = session.get("pending_user_id")
         beta_code       = session.get("beta_code")
-
-        print(f"DEBUG pending_user_id: {pending_user_id}")
-        print(f"DEBUG beta_code: {beta_code}")
 
         if not pending_user_id or not beta_code:
             conn.close()

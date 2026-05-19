@@ -1,14 +1,49 @@
+-- =============================================================
+-- schema_pg.sql — StreamPilot PostgreSQL schema (production)
+--
+-- For live schema changes use the migrations/ folder.
+--
+-- Design rules:
+--   Serial primary keys throughout
+--   All channels share one database, isolated by channel_id
+--   Soft delete (deleted_at) where data should be recoverable
+--   Hard delete where rows are truly disposable
+--   Platform-agnostic — built for Twitch now, YouTube and
+--   TikTok later without schema changes
+-- =============================================================
+
+
+-- =============================================================
+-- STREAMER SIDE
+-- =============================================================
+
+-- -------------------------------------------------------------
+-- Users
+-- One row per StreamPilot account.
+-- No platform-specific columns here — platform identity lives
+-- in user_platforms so one account can connect multiple platforms.
+-- Created automatically on first login via any platform OAuth.
+--
+-- tier:              free | premium | lifer
+-- status:            active | suspended
+-- next_payment_due:  NULL for free and lifer tiers
+-- beta_code_used:    code redeemed at registration, if any
+-- -------------------------------------------------------------
 CREATE TABLE users (
-    id            SERIAL PRIMARY KEY,
-    email         TEXT    UNIQUE,
-    full_name     TEXT,
-    chosen_name   TEXT,
-    display_name  TEXT    NOT NULL,
-    avatar_url    TEXT,
-    tier          TEXT    NOT NULL DEFAULT 'free',
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    last_login_at TIMESTAMPTZ
+    id                SERIAL PRIMARY KEY,
+    email             TEXT    UNIQUE,
+    full_name         TEXT,
+    chosen_name       TEXT,
+    display_name      TEXT    NOT NULL,
+    avatar_url        TEXT,
+    tier              TEXT    NOT NULL DEFAULT 'free',
+    status            TEXT    NOT NULL DEFAULT 'active',
+    next_payment_due  TIMESTAMPTZ,
+    beta_code_used    TEXT,
+    created_at        TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_login_at     TIMESTAMPTZ
 );
+
 CREATE TABLE user_platforms (
     id                    SERIAL PRIMARY KEY,
     user_id               INTEGER NOT NULL REFERENCES users(id),
@@ -132,6 +167,13 @@ CREATE TABLE viewer_stats (
     viewer_count  INTEGER NOT NULL DEFAULT 0,
     recorded_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+
+-- =============================================================
+-- ADMIN SIDE
+-- Completely separate from streamer tables.
+-- No platform integration. Username and password only.
+-- =============================================================
 
 CREATE TABLE admin_users (
     id                   SERIAL PRIMARY KEY,

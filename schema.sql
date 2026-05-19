@@ -26,17 +26,25 @@ PRAGMA foreign_keys = ON;
 -- No platform-specific columns here — platform identity lives
 -- in user_platforms so one account can connect multiple platforms.
 -- Created automatically on first login via any platform OAuth.
+--
+-- tier:              free | premium | lifer
+-- status:            active | suspended
+-- next_payment_due:  NULL for free and lifer tiers
+-- beta_code_used:    code redeemed at registration, if any
 -- -------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users (
-    id            INTEGER PRIMARY KEY AUTOINCREMENT,
-    email         TEXT    UNIQUE,
-    full_name     TEXT,
-    chosen_name   TEXT,
-    display_name  TEXT    NOT NULL,
-    avatar_url    TEXT,
-    tier          TEXT    NOT NULL DEFAULT 'free',
-    created_at    TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    last_login_at TEXT
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    email             TEXT    UNIQUE,
+    full_name         TEXT,
+    chosen_name       TEXT,
+    display_name      TEXT    NOT NULL,
+    avatar_url        TEXT,
+    tier              TEXT    NOT NULL DEFAULT 'free',
+    status            TEXT    NOT NULL DEFAULT 'active',
+    next_payment_due  TEXT,
+    beta_code_used    TEXT,
+    created_at        TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_login_at     TEXT
 );
 
 
@@ -296,15 +304,15 @@ CREATE TABLE IF NOT EXISTS admin_password_history (
 -- status: pending | approved | rejected
 -- -------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS beta_requests (
-    id           INTEGER PRIMARY KEY AUTOINCREMENT,
-    name         TEXT    NOT NULL,
-    email        TEXT    NOT NULL UNIQUE,
-    twitch_login TEXT,
-    reason       TEXT,
-    status       TEXT    NOT NULL DEFAULT 'pending',
-    created_at   TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    reviewed_at  TEXT,
-    reviewed_by  INTEGER REFERENCES admin_users(id),
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    name              TEXT    NOT NULL,
+    email             TEXT    NOT NULL UNIQUE,
+    twitch_login      TEXT,
+    reason            TEXT,
+    status            TEXT    NOT NULL DEFAULT 'pending',
+    created_at        TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    reviewed_at       TEXT,
+    reviewed_by       INTEGER REFERENCES admin_users(id),
     streamer_tag      TEXT,
     platform          TEXT,
     consent_data      INTEGER NOT NULL DEFAULT 0,
@@ -318,10 +326,10 @@ CREATE TABLE IF NOT EXISTS beta_requests (
 -- Updated every time an overlay connects via WebSocket.
 -- -------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS overlay_connections (
-    id               INTEGER PRIMARY KEY AUTOINCREMENT,
-    channel_id       INTEGER NOT NULL REFERENCES channels(id),
-    overlay_type     TEXT    NOT NULL,
-    last_connected_at TEXT   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    channel_id        INTEGER NOT NULL REFERENCES channels(id),
+    overlay_type      TEXT    NOT NULL,
+    last_connected_at TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(channel_id, overlay_type)
 );
 

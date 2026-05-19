@@ -110,3 +110,9 @@
   background: var(--accent);
   color: #fff;
 }
+
+/* Force white text on primary button in both modes */
+.btn--primary,
+.btn--primary:hover {
+  color: #ffffff !important;
+}
