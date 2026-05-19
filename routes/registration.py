@@ -238,11 +238,12 @@ def join():
             f"""
             INSERT INTO users (full_name, chosen_name, display_name, email)
             VALUES ({p}, {p}, {p}, {p})
+            RETURNING id
             """,
             (full_name, chosen_name, chosen_name, email)
         )
         conn.commit()
-        user_id = cur.lastrowid
+        user_id = cur.fetchone()["id"]
 
         # ---- Store password in user_preferences -------------
         # We use user_preferences as a simple KV store so the
