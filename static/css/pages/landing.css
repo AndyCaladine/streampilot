@@ -778,7 +778,7 @@
 .strength-bar.active-weak   { background: var(--danger); }
 .strength-bar.active-fair   { background: var(--warn); }
 .strength-bar.active-good   { background: var(--success); }
-.strength-bar.active-strong { background: var(--accent); }
+.strength-bar.active-strong { background: var(--success); }
 
 .strength-rules {
   display: grid;
