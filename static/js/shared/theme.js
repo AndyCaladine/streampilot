@@ -5,15 +5,19 @@
    ============================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
-  const themeToggle = document.getElementById("themeToggle");
-  if (!themeToggle) return;
+  const toggle = document.getElementById("themeToggleInput");
+  const label  = document.getElementById("themeToggle");
+  if (!toggle || !label) return;
 
-  themeToggle.addEventListener("click", () => {
-    const current = document.documentElement.getAttribute("data-theme") || "light";
-    const next    = current === "light" ? "dark" : "light";
+  const current = document.documentElement.getAttribute("data-theme") || "light";
+  toggle.checked = current === "dark";
+  label.classList.toggle("dark", current === "dark");
+
+  toggle.addEventListener("change", () => {
+    const next = toggle.checked ? "dark" : "light";
     applyTheme(next);
 
-    if (themeToggle.dataset.loggedIn === "true") {
+    if (label.dataset.loggedIn === "true") {
       saveThemePreference(next);
     }
   });
@@ -23,6 +27,11 @@ document.addEventListener("DOMContentLoaded", () => {
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   localStorage.setItem("sp_theme", theme);
+
+  const toggle = document.getElementById("themeToggleInput");
+  const label  = document.getElementById("themeToggle");
+  if (toggle) toggle.checked = theme === "dark";
+  if (label)  label.classList.toggle("dark", theme === "dark");
 }
 
 
@@ -30,7 +39,7 @@ async function saveThemePreference(theme) {
   try {
     await apiRequest("/api/preferences", "POST", {
       preference: "theme",
-      value:      theme,
+      value: theme,
     });
   } catch (error) {
     console.warn("Could not save theme preference to server:", error.message);

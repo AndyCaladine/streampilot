@@ -56,16 +56,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const userMenuDropdown = document.getElementById("userMenuDropdown");
 
   if (userMenuBtn && userMenuDropdown) {
-    userMenuBtn.addEventListener("click", (event) => {
-      event.stopPropagation();
-      userMenuDropdown.classList.toggle("open");
-    });
+      userMenuBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        userMenuDropdown.classList.toggle("open");
+      });
 
-    // Close when clicking outside
-    document.addEventListener("click", () => {
-      userMenuDropdown.classList.remove("open");
-    });
-  }
+      // Stop clicks inside dropdown from closing it
+      userMenuDropdown.addEventListener("click", (event) => {
+        event.stopPropagation();
+      });
+
+      // Close when clicking outside
+      document.addEventListener("click", () => {
+        userMenuDropdown.classList.remove("open");
+      });
+    }
 
   // -- Stream status from WebSocket --------------------------
   document.addEventListener("sp:stream_status", (event) => {

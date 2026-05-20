@@ -269,3 +269,63 @@
   background: var(--border);
   margin: 4px 0;
 }
+
+/* ---- Theme switch in user dropdown ----------------------- */
+.user-menu__theme {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  gap: 12px;
+}
+
+.user-menu__theme-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 56px;
+  height: 28px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.theme-switch svg {
+  width: 56px;
+  height: 28px;
+}
+
+.theme-switch #container,
+.theme-switch #patches,
+.theme-switch #stars,
+.theme-switch #button,
+.theme-switch #sun,
+.theme-switch #moon,
+.theme-switch #cloud {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-switch #sun   { opacity: 1; }
+.theme-switch #moon  { opacity: 0; }
+.theme-switch #cloud { opacity: 1; }
+.theme-switch #stars { opacity: 0; }
+
+.theme-switch.dark #container { fill: #2b4360; stroke: #1a2e45; }
+.theme-switch.dark #button    { transform: translate(28px, 2.333px); }
+.theme-switch.dark #sun       { opacity: 0; }
+.theme-switch.dark #moon      { opacity: 1; }
+.theme-switch.dark #cloud     { opacity: 0; }
+.theme-switch.dark #stars     { opacity: 1; }
