@@ -37,15 +37,15 @@ function updateLocalClock() {
   if (!timeEl) return;
 
   if (!clockVisible) {
-    timeEl.textContent = "--:--:--";
+    timeEl.textContent = "Hidden";
+    if (labelEl) labelEl.textContent = "Click to show";
     return;
   }
 
   const now = new Date();
-  timeEl.textContent  = formatClockTime(now, clockFormat);
+  timeEl.textContent = formatClockTime(now, clockFormat);
 
   if (labelEl) {
-    // Show timezone abbreviation e.g. BST, GMT
     labelEl.textContent = getTimezoneAbbreviation();
   }
 }
@@ -55,15 +55,14 @@ function formatClockTime(date, format) {
   const options = {
     hour:   "2-digit",
     minute: "2-digit",
-    second: "2-digit",
     hour12: format === "12",
   };
-  return date.toLocaleTimeString("en-GB", options);
+  return date.toLocaleTimeString(navigator.language || "en-GB", options);
 }
 
 
 function getTimezoneAbbreviation() {
-  return Intl.DateTimeFormat("en-GB", { timeZoneName: "short" })
+  return Intl.DateTimeFormat(navigator.language || "en-GB", { timeZoneName: "short" })
     .formatToParts(new Date())
     .find(part => part.type === "timeZoneName")?.value || "Local";
 }
@@ -73,7 +72,6 @@ function loadWorldClocks() {
   const container = document.getElementById("worldClocks");
   if (!container) return;
 
-  // Load saved world clocks from localStorage
   const saved = localStorage.getItem("sp_world_clocks");
   if (!saved) return;
 
@@ -84,29 +82,26 @@ function loadWorldClocks() {
     return;
   }
 
-  // Render each world clock
   worldClocks.forEach(timezone => {
     const clockEl = createWorldClock(timezone);
     container.appendChild(clockEl);
   });
 
-  // Update world clocks every second
   setInterval(() => updateWorldClocks(worldClocks), 1000);
 }
 
 
 function createWorldClock(timezone) {
   const div = document.createElement("div");
-  div.className      = "clock";
+  div.className        = "clock";
   div.dataset.timezone = timezone;
 
   const timeEl  = document.createElement("span");
-  timeEl.className   = "clock__time";
+  timeEl.className = "clock__time";
 
   const labelEl = document.createElement("span");
-  labelEl.className  = "clock__label";
+  labelEl.className = "clock__label";
 
-  // Get the abbreviation for this timezone
   try {
     labelEl.textContent = Intl.DateTimeFormat("en-GB", {
       timeZone:     timezone,
@@ -132,21 +127,19 @@ function updateWorldClocks(timezones) {
     if (!timeEl) return;
 
     try {
-      timeEl.textContent = new Date().toLocaleTimeString("en-GB", {
+      timeEl.textContent = new Date().toLocaleTimeString(navigator.language || "en-GB", {
         timeZone: timezone,
         hour:     "2-digit",
         minute:   "2-digit",
-        second:   "2-digit",
         hour12:   clockFormat === "12",
       });
     } catch {
-      timeEl.textContent = "--:--:--";
+      timeEl.textContent = "--:--";
     }
   });
 }
 
 
-// Exported so settings.js can call these when preferences change
 function setClockFormat(format) {
   clockFormat = format;
   localStorage.setItem("sp_clock_format", format);
