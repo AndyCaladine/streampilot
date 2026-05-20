@@ -75,9 +75,9 @@
   --muted:          #6b7280;
 
   --brand:            #056af6;
-  --accent:           #f97316;
-  --accent-hover:     #ea6c0a;
-  --accent-light:     rgba(249, 115, 22, 0.15);
+  --accent:           #fcb002;
+  --accent-hover:     #e0a000;
+  --accent-light:     rgba(252, 176, 2, 0.15);;
 
   --shadow-sm:  0 1px 3px rgba(0,0,0,0.3);
   --shadow:     0 4px 6px rgba(0,0,0,0.3);
