@@ -306,6 +306,21 @@
               </label>
             </div>
 
+            <!-- Colour theme picker -->
+            <div class="user-menu__colours">
+              <span class="user-menu__colours-label">Colour</span>
+              <div class="user-menu__swatches">
+                <button class="colour-swatch" data-colour-pick="default" title="Default" style="background:#7c3aed;"></button>
+                <button class="colour-swatch" data-colour-pick="blue"    title="Blue"    style="background:#2563eb;"></button>
+                <button class="colour-swatch" data-colour-pick="green"   title="Green"   style="background:#16a34a;"></button>
+                <button class="colour-swatch" data-colour-pick="red"     title="Red"     style="background:#dc2626;"></button>
+                <button class="colour-swatch" data-colour-pick="pink"    title="Pink"    style="background:#db2777;"></button>
+                <button class="colour-swatch" data-colour-pick="yellow"  title="Yellow"  style="background:#d97706;"></button>
+                <button class="colour-swatch" data-colour-pick="mono"    title="Mono"    style="background:#374151;"></button>
+                <button class="colour-swatch" data-colour-pick="teal"    title="Teal"    style="background:#0d9488;"></button>
+              </div>
+            </div>
+
             <a href="{{ url_for('logout') }}" class="user-menu__item user-menu__item--danger">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                 <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
@@ -322,7 +337,7 @@
     <main class="page-content">
       <div class="page-header">
         <div class="page-header__left">
-          <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+          <h1 class="page-title">{% block page_title %}{% endblock %}</h1>          
           <p class="page-subtitle">{% block page_subtitle %}{% endblock %}</p>
         </div>
         <div class="page-header__actions">

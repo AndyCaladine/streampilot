@@ -7,14 +7,20 @@
 
   <!-- Anti-flash theme script — must run before CSS loads -->
   <script>
-    (function () {
-      var stored = localStorage.getItem("sp_theme");
-      var current = document.documentElement.getAttribute("data-theme");
-      if (current === "light" && stored === "dark") {
-        document.documentElement.setAttribute("data-theme", "dark");
-      }
-      localStorage.setItem("sp_theme", document.documentElement.getAttribute("data-theme"));
-    })();
+(function () {
+  var stored = localStorage.getItem("sp_theme");
+  var current = document.documentElement.getAttribute("data-theme");
+  if (current === "light" && stored === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+  }
+  localStorage.setItem("sp_theme", document.documentElement.getAttribute("data-theme"));
+
+  // Apply saved colour theme
+  var colour = localStorage.getItem("sp_colour");
+  if (colour && colour !== "default") {
+    document.documentElement.setAttribute("data-colour", colour);
+  }
+})();
   </script>
 
   <!-- Google Fonts -->

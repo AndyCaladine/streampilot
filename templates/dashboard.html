@@ -1,7 +1,7 @@
 {% extends "dashboard_base.html" %}
 
 {% block title %}Dashboard — StreamPilot{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
+{% block page_title %}Dash<span class="nav-accent">board</span>{% endblock %}
 {% block page_subtitle %}Your stream at a glance{% endblock %}
 
 {% block page_content %}
@@ -10,7 +10,7 @@
   <!-- Event feed -->
   <div class="card">
     <div class="card__header">
-      <h2 class="card__title">Event Feed</h2>
+      <h2 class="card__title">Event <span class="card__title-accent">Feed</span></h2>
       <span class="card__badge" id="eventCount">0</span>
     </div>
     <div class="card__body">
@@ -23,7 +23,7 @@
   <!-- Active goals -->
   <div class="card">
     <div class="card__header">
-      <h2 class="card__title">Active Goals</h2>
+      <h2 class="card__title">Active <span class="card__title-accent">Goals</span></h2>
     </div>
     <div class="card__body">
       <div id="goalsFeed">
@@ -35,7 +35,7 @@
   <!-- Recent commands used -->
   <div class="card">
     <div class="card__header">
-      <h2 class="card__title">Recent Commands</h2>
+      <h2 class="card__title">Recent <span class="card__title-accent">Commands</span></h2>
     </div>
     <div class="card__body">
       <div id="recentCommands">
@@ -47,7 +47,7 @@
   <!-- Overlay status -->
   <div class="card">
     <div class="card__header">
-      <h2 class="card__title">Overlay Status</h2>
+      <h2 class="card__title">Overlay <span class="card__title-accent">Status</span></h2>
     </div>
     <div class="card__body">
       <div class="overlay-status-list" id="overlayStatusList">

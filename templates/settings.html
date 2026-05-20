@@ -57,20 +57,66 @@
     </div>
   </div>
 
-  <!-- Theme preferences -->
+  <!-- Appearance -->
   <div class="card">
     <div class="card__header">
       <h2 class="card__title">Appearance</h2>
     </div>
     <div class="card__body">
+
+      <div class="form-group mb-24">
+        <label class="form-label">Mode</label>
+        <p class="form-hint mb-8">Use the Day/Night toggle in the top menu to switch between light and dark mode.</p>
+      </div>
+
       <div class="form-group">
-        <label class="form-label">Theme</label>
-        <div class="btn-group">
-          <button class="btn btn--secondary btn--sm theme-btn" data-theme="light">Light</button>
-          <button class="btn btn--secondary btn--sm theme-btn" data-theme="dark">Dark</button>
-          <button class="btn btn--secondary btn--sm theme-btn" data-theme="system">System</button>
+        <label class="form-label">Colour Theme</label>
+        <p class="form-hint mb-16">Choose an accent colour to match your stream's vibe.</p>
+        <div class="colour-picker-grid">
+
+          <button class="colour-picker-swatch" data-colour-pick="default" title="Default">
+            <span class="colour-picker-swatch__dot" style="background:#7c3aed;"></span>
+            <span class="colour-picker-swatch__label">Default</span>
+          </button>
+
+          <button class="colour-picker-swatch" data-colour-pick="blue" title="Blue">
+            <span class="colour-picker-swatch__dot" style="background:#2563eb;"></span>
+            <span class="colour-picker-swatch__label">Blue</span>
+          </button>
+
+          <button class="colour-picker-swatch" data-colour-pick="green" title="Green">
+            <span class="colour-picker-swatch__dot" style="background:#16a34a;"></span>
+            <span class="colour-picker-swatch__label">Green</span>
+          </button>
+
+          <button class="colour-picker-swatch" data-colour-pick="red" title="Red">
+            <span class="colour-picker-swatch__dot" style="background:#dc2626;"></span>
+            <span class="colour-picker-swatch__label">Red</span>
+          </button>
+
+          <button class="colour-picker-swatch" data-colour-pick="pink" title="Pink">
+            <span class="colour-picker-swatch__dot" style="background:#db2777;"></span>
+            <span class="colour-picker-swatch__label">Pink</span>
+          </button>
+
+          <button class="colour-picker-swatch" data-colour-pick="yellow" title="Yellow">
+            <span class="colour-picker-swatch__dot" style="background:#d97706;"></span>
+            <span class="colour-picker-swatch__label">Yellow</span>
+          </button>
+
+          <button class="colour-picker-swatch" data-colour-pick="mono" title="Mono">
+            <span class="colour-picker-swatch__dot" style="background:#374151;"></span>
+            <span class="colour-picker-swatch__label">Mono</span>
+          </button>
+
+          <button class="colour-picker-swatch" data-colour-pick="teal" title="Teal">
+            <span class="colour-picker-swatch__dot" style="background:#0d9488;"></span>
+            <span class="colour-picker-swatch__label">Teal</span>
+          </button>
+
         </div>
       </div>
+
     </div>
   </div>
 

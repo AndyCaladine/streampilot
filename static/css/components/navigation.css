@@ -3,6 +3,8 @@
                     stats pills, clocks, user menu
    ============================================================= */
 
+  .nav-accent { 
+    color: var(--accent); }
 /* ---- Mobile menu button ----------------------------------- */
 .topbar__menu-btn {
   color: var(--muted);
@@ -183,6 +185,46 @@
 
 [data-theme="dark"] .icon-sun  { display: block; }
 [data-theme="dark"] .icon-moon { display: none; }
+
+/* ---- Colour picker in dropdown --------------------------- */
+.user-menu__colours {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  gap: 12px;
+}
+
+.user-menu__colours-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.user-menu__swatches {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.colour-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color var(--transition), transform var(--transition);
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.colour-swatch:hover {
+  transform: scale(1.2);
+}
+
+.colour-swatch.active {
+  border-color: var(--text);
+}
 
 /* ---- User menu -------------------------------------------- */
 .user-menu {

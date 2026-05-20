@@ -294,3 +294,62 @@ def overlay_status():
             }
 
     return jsonify(status)
+
+@api_bp.route("/preferences", methods=["POST"])
+@api_login_required
+def save_preference():
+    from utils.db import get_db_type
+    data = request.get_json()
+    preference = data.get("preference", "").strip()
+    value = data.get("value", "").strip()
+
+    if not preference or not value:
+        return jsonify({"error": "Preference and value are required."}), 400
+
+    allowed = {"theme", "colour_scheme", "clock_format", "clock_visible", "world_clocks"}
+    if preference not in allowed:
+        return jsonify({"error": "Unknown preference."}), 400
+
+    conn = get_db_connection()
+    p = placeholder()
+
+    if get_db_type() == "postgres":
+        conn.execute(
+            f"""
+            INSERT INTO user_preferences (user_id, preference, value)
+            VALUES ({p}, {p}, {p})
+            ON CONFLICT (user_id, preference) DO UPDATE SET value = {p}, updated_at = CURRENT_TIMESTAMP
+            """,
+            (session["user_id"], preference, value, value)
+        )
+    else:
+        conn.execute(
+            f"""
+            INSERT OR REPLACE INTO user_preferences (user_id, preference, value)
+            VALUES ({p}, {p}, {p})
+            """,
+            (session["user_id"], preference, value)
+        )
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"ok": True})
+
+
+@api_bp.route("/preferences", methods=["GET"])
+@api_login_required
+def get_preferences():
+    conn = get_db_connection()
+    p = placeholder()
+
+    prefs = conn.execute(
+        f"""
+        SELECT preference, value FROM user_preferences
+        WHERE user_id = {p}
+        """,
+        (session["user_id"],)
+    ).fetchall()
+
+    conn.close()
+    return jsonify({row["preference"]: row["value"] for row in prefs})
