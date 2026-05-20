@@ -57,6 +57,16 @@
   font-weight: 600;
 }
 
+/* ---- Dashboard chat widget ------------------------------- */
+.dashboard-chat {
+  margin-top: 16px;
+}
+
+.dashboard-chat .chat-body {
+  height: 300px;
+  overflow-y: auto;
+}
+
 /* ---- Event feed ------------------------------------------ */
 .event-feed {
   display: flex;

@@ -68,8 +68,28 @@
   </div>
 
 </div>
+
+<!-- Chat feed — full width -->
+<div class="card dashboard-chat mt-16">
+  <div class="card__header">
+    <h2 class="card__title">Chat <span class="card__title-accent">Feed</span></h2>
+    <div class="card__actions">
+      <button class="btn btn--secondary btn--sm" id="pauseChat">Pause</button>
+      <button class="btn btn--danger btn--sm" id="clearChat">Clear</button>
+    </div>
+  </div>
+  <div class="card__body chat-body" id="chatMessages">
+    <p class="empty-state">Chat will appear here when you go live.</p>
+  </div>
+  <div class="card__footer">
+    <input type="text" class="form-input" id="chatInput" placeholder="Send a message as your bot...">
+    <button class="btn btn--primary" id="chatSend">Send</button>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block page_scripts %}
   <script src="{{ url_for('static', filename='js/pages/dashboard.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pages/chat.js') }}"></script>
 {% endblock %}
