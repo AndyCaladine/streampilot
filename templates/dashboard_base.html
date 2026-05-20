@@ -27,14 +27,15 @@
               class="sidebar__logo-icon logo-dark">
           <div class="sidebar__logo-text">
             <span class="sidebar__wordmark">STREAM<span>PILOT</span></span>
+            {% if session.get('active_role') != 'owner' %}
             <span class="sidebar__role">
-              {% if session.get('active_role') == 'owner' %}
-                Pilot
-              {% elif session.get('active_role') == 'lead_mod' %}
+              {% if session.get('active_role') == 'lead_mod' %}
                 Co-Pilot
               {% else %}
                 Crew
               {% endif %}
+            </span>
+            {% endif %}
             </span>
           </div>
         </a>

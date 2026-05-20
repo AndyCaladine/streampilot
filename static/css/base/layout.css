@@ -30,9 +30,12 @@
 }
 
 .sidebar__header {
-  padding: 16px;
+  padding: 18px 16px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
 }
 
 .sidebar__logo {
@@ -44,8 +47,8 @@
 }
 
 .sidebar__logo-icon {
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
   flex-shrink: 0;
 }
 
@@ -63,7 +66,7 @@
 
 .sidebar__wordmark {
   font-family: var(--font-display);
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 700;
   letter-spacing: 2px;
   color: var(--text);
