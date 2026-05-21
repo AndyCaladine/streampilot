@@ -76,6 +76,31 @@ function markActiveSwatch(colour) {
   document.querySelectorAll("[data-colour-pick]").forEach(swatch => {
     swatch.classList.toggle("active", swatch.dataset.colourPick === colour);
   });
+
+  const confirm = document.getElementById("colourConfirm");
+  if (!confirm) return;
+
+  const labels = {
+    default: "Default", blue: "Blue", green: "Green", red: "Red",
+    pink: "Pink", yellow: "Yellow", mono: "Mono", teal: "Teal",
+  };
+
+  confirm.innerHTML = `
+    <span>✓ Colour theme changed to ${labels[colour] || colour}</span>
+    <span class="colour-confirm__close" id="colourConfirmClose">✕</span>
+  `;
+  confirm.style.display = "flex";
+
+  // Close button
+  document.getElementById("colourConfirmClose").addEventListener("click", () => {
+    confirm.style.display = "none";
+  });
+
+  // Auto dismiss after 3 seconds
+  clearTimeout(window._colourConfirmTimer);
+  window._colourConfirmTimer = setTimeout(() => {
+    confirm.style.display = "none";
+  }, 3000);
 }
 
 
