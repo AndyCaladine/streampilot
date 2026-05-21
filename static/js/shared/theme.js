@@ -30,14 +30,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---- Colour pickers -------------------------------------
   const currentColour = localStorage.getItem("sp_colour") || "default";
   applyColour(currentColour, false);
-  markActiveSwatch(currentColour);
+  markActiveSwatch(currentColour, false);
 
   // Bind all swatches (dropdown + settings)
   document.querySelectorAll("[data-colour-pick]").forEach(swatch => {
     swatch.addEventListener("click", () => {
       const colour = swatch.dataset.colourPick;
       applyColour(colour, true);
-      markActiveSwatch(colour);
+      markActiveSwatch(colour, true);
 
       const loggedIn = document.getElementById("themeToggle")?.dataset.loggedIn === "true";
       if (loggedIn) {
@@ -45,6 +45,20 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  // ---- Load saved colour from server ----------------------
+  const loggedIn = document.getElementById("themeToggle")?.dataset.loggedIn === "true";
+  if (loggedIn) {
+    apiRequest("/api/preferences", "GET").then(prefs => {
+      if (prefs.colour_scheme) {
+        applyColour(prefs.colour_scheme, true);
+        markActiveSwatch(prefs.colour_scheme, false);
+      }
+      if (prefs.theme) {
+        applyTheme(prefs.theme);
+      }
+    }).catch(() => {});
+  }
 
 });
 
@@ -72,10 +86,12 @@ function applyColour(colour, save) {
 }
 
 
-function markActiveSwatch(colour) {
+function markActiveSwatch(colour, showToast = false) {
   document.querySelectorAll("[data-colour-pick]").forEach(swatch => {
     swatch.classList.toggle("active", swatch.dataset.colourPick === colour);
   });
+
+  if (!showToast) return;
 
   const confirm = document.getElementById("colourConfirm");
   if (!confirm) return;
@@ -91,12 +107,10 @@ function markActiveSwatch(colour) {
   `;
   confirm.style.display = "flex";
 
-  // Close button
   document.getElementById("colourConfirmClose").addEventListener("click", () => {
     confirm.style.display = "none";
   });
 
-  // Auto dismiss after 3 seconds
   clearTimeout(window._colourConfirmTimer);
   window._colourConfirmTimer = setTimeout(() => {
     confirm.style.display = "none";
@@ -111,17 +125,3 @@ async function savePreference(preference, value) {
     console.warn("Could not save preference to server:", error.message);
   }
 }
-
-// ---- Load saved colour from server ----------------------
-  const loggedIn = document.getElementById("themeToggle")?.dataset.loggedIn === "true";
-  if (loggedIn) {
-    apiRequest("/api/preferences", "GET").then(prefs => {
-      if (prefs.colour_scheme) {
-        applyColour(prefs.colour_scheme, true);
-        markActiveSwatch(prefs.colour_scheme);
-      }
-      if (prefs.theme) {
-        applyTheme(prefs.theme);
-      }
-    }).catch(() => {});
-  }

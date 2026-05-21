@@ -306,9 +306,9 @@ def save_preference():
     if not preference or not value:
         return jsonify({"error": "Preference and value are required."}), 400
 
-    allowed = {"theme", "colour_scheme", "clock_format", "clock_visible", "world_clocks"}
-    if preference not in allowed:
-        return jsonify({"error": "Unknown preference."}), 400
+        allowed = {"theme", "colour_scheme", "clock_format", "clock_visible", "world_clocks", "onboarding_complete"}    
+        if preference not in allowed:
+            return jsonify({"error": "Unknown preference."}), 400
 
     conn = get_db_connection()
     p = placeholder()

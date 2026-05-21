@@ -64,3 +64,12 @@ async function loadOverlayStatus() {
     showToast("Could not load overlay status.", "error");
   }
 }
+
+const restartBtn = document.getElementById("restartTutorial");
+  if (restartBtn) {
+    restartBtn.addEventListener("click", async () => {
+      await resetOnboarding();
+      restartBtn.textContent = "Done — visit the dashboard to start the tour";
+      restartBtn.disabled = true;
+    });
+  }

@@ -12,6 +12,9 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  // Start onboarding tour if not completed
+  startOnboarding();
+
   // -- Initialise WebSocket ----------------------------------
   SP.init();
 

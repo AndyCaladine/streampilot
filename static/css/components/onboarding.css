@@ -1,0 +1,108 @@
+/* =============================================================
+   onboarding.css — first-time tutorial overlay styles
+   ============================================================= */
+
+/* ---- Backdrop --------------------------------------------- */
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.10);
+  z-index: 9000;
+  pointer-events: none;
+}
+
+/* ---- Highlight cutout ------------------------------------ */
+.onboarding-highlight {
+  position: absolute;
+  border-radius: var(--radius);
+  box-shadow:
+    0 0 0 4px var(--accent),
+    0 0 0 9999px rgba(0, 0, 0, 0.65);
+  transition: all 0.25s ease;
+  pointer-events: none;
+}
+
+/* ---- Tooltip card ---------------------------------------- */
+.onboarding-tooltip {
+  position: absolute;
+  z-index: 9001;
+  background: var(--card);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-lg);
+  transition: top 0.25s ease, left 0.25s ease;
+}
+
+.onboarding-tooltip__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition), background var(--transition);
+}
+
+.onboarding-tooltip__close:hover {
+  color: var(--text);
+  background: var(--border);
+}
+
+.onboarding-tooltip__step {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.onboarding-tooltip__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 8px 0;
+  padding-right: 20px;
+}
+
+.onboarding-tooltip__body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+}
+
+.onboarding-tooltip__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.onboarding-tooltip__skip {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color var(--transition);
+  flex-shrink: 0;
+}
+
+.onboarding-tooltip__skip:hover {
+  color: var(--text);
+}
+
+.onboarding-tooltip__nav {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}

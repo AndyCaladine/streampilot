@@ -4,6 +4,7 @@
 
 {% block styles %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/onboarding.css') }}">
  
   {% block page_styles %}{% endblock %}
 {% endblock %}
@@ -365,6 +366,7 @@
   <script src="{{ url_for('static', filename='js/shared/clock.js') }}"></script>
   <script src="{{ url_for('static', filename='js/shared/theme.js') }}"></script>
   <script src="{{ url_for('static', filename='js/shared/dashboard.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/shared/onboarding.js') }}"></script>
   <!-- Page specific scripts -->
   {% block page_scripts %}{% endblock %}
 {% endblock %}
