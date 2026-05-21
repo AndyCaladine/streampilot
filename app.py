@@ -4,11 +4,14 @@ monkey.patch_all()
 from flask import Flask, render_template, redirect, url_for, session, request, flash
 from extensions import socketio
 from config import Config
+
 from routes.streamer import streamer_bp
 from routes.admin import admin_bp
 from routes.registration import registration_bp
 from routes.overlays import overlays_bp
 from routes.api import api_bp
+from routes.password import password_bp
+
 from datetime import datetime, timezone
 from utils.db import get_db_connection, close_db, placeholder
 
@@ -22,6 +25,7 @@ app.register_blueprint(admin_bp, url_prefix="/admin")
 app.register_blueprint(registration_bp)
 app.register_blueprint(overlays_bp, url_prefix="/overlay")
 app.register_blueprint(api_bp, url_prefix="/api")
+app.register_blueprint(password_bp)
 
 from routes import ws_events  # noqa: F401
 

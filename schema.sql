@@ -354,3 +354,17 @@ CREATE TABLE IF NOT EXISTS user_preferences (
     updated_at TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id, preference)
 );
+
+-- -------------------------------------------------------------
+-- Password reset tokens
+-- Short-lived tokens for the forgot password flow.
+-- Tokens are single-use and expire after 1 hour.
+-- Deleted immediately after a successful password reset.
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token       TEXT NOT NULL UNIQUE,
+    expires_at  DATETIME NOT NULL,
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+);

@@ -32,3 +32,8 @@ class Config:
     # Admin portal IP whitelist
     # Comma-separated list of allowed IPs — add VPN tunnel IP here for production
     ADMIN_ALLOWED_IPS = os.environ.get("ADMIN_ALLOWED_IPS", "127.0.0.1")
+
+    #Resend for emails
+    RESEND_API_KEY = os.environ.get("RESEND_API_KEY") or None
+    RESEND_FROM_EMAIL = os.environ.get("RESEND_FROM_EMAIL") or "noreply@stream-pilot.co.uk"
+
