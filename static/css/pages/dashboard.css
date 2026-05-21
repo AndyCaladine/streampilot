@@ -246,3 +246,95 @@
 
 [data-theme="dark"] .mode-toggle__day   { display: none; }
 [data-theme="dark"] .mode-toggle__night { display: inline-flex; }
+
+/* =============================================================
+   demo / chat styles — dashboard chat widget
+   ============================================================= */
+
+/* ---- Chat messages --------------------------------------- */
+.chat-message {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 3px 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+  flex-wrap: wrap;
+}
+
+.chat-message:hover {
+  background: var(--accent-light);
+}
+
+.chat-message__badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.chat-badge {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.chat-message__name {
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.chat-message__name:hover {
+  text-decoration: underline;
+}
+
+.chat-message__colon {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.chat-message__text {
+  color: var(--text);
+  font-size: 13px;
+  word-break: break-word;
+}
+
+/* ---- Recent commands ------------------------------------- */
+.recent-command-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 13px;
+}
+
+.recent-command-item:last-child {
+  border-bottom: none;
+}
+
+.recent-command-item__trigger {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.recent-command-item__user {
+  color: var(--muted);
+  font-size: 12px;
+  flex: 1;
+}
+
+.recent-command-item__time {
+  color: var(--muted);
+  font-size: 11px;
+  flex-shrink: 0;
+}

@@ -110,6 +110,28 @@
   .topbar__stats { display: none; }
 }
 
+/* ---- Simulate live state --------------------------------- */
+.on-air.simulating {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.on-air.simulating .on-air__dot {
+  background: var(--accent);
+  animation: breathe 2.5s ease-in-out infinite;
+}
+
+.stat-pill.simulating {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.stat-pill.simulating svg {
+  color: var(--accent);
+}
+
 /* ---- Clocks ---------------------------------------------- */
 .topbar__clocks {
   display: flex;
