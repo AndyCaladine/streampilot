@@ -189,6 +189,9 @@ function stopSimulation(simulateBtn) {
 
   // Stop demo data
   stopDemo();
+
+ //Restore real data
+ loadStreamStats(); 
 }
 
 

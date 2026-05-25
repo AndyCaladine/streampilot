@@ -353,3 +353,64 @@ def get_preferences():
 
     conn.close()
     return jsonify({row["preference"]: row["value"] for row in prefs})
+
+@api_bp.route("/stream/stats", methods=["GET"])
+@api_login_required
+def stream_stats():
+    from utils.twitch import get_stream, get_follower_count, get_subscribers
+    from datetime import datetime, timezone
+
+    access_token = session.get("access_token")
+    if not access_token:
+        return jsonify({"error": "No Twitch token in session"}), 401
+
+    conn = get_db_connection()
+    p = placeholder()
+
+    # Get the Twitch broadcaster ID for the active channel
+    platform_row = conn.execute(
+        f"""
+        SELECT up.platform_user_id
+        FROM user_platforms up
+        JOIN channels c ON c.user_id = up.user_id
+        WHERE c.id = {p}
+        AND up.platform = 'twitch'
+        """,
+        (current_channel_id(),)
+    ).fetchone()
+
+    conn.close()
+
+    if not platform_row:
+        return jsonify({"error": "No Twitch platform linked"}), 404
+
+    broadcaster_id = platform_row["platform_user_id"]
+
+    # Fetch from Twitch
+    stream = get_stream(broadcaster_id, access_token)
+    followers = get_follower_count(broadcaster_id, access_token)
+    subscribers = get_subscribers(broadcaster_id, access_token)
+
+    is_live = stream is not None
+    viewers = stream["viewer_count"] if is_live else None
+    started_at = stream["started_at"] if is_live else None
+
+    # Calculate uptime in seconds if live
+    uptime_seconds = None
+    if started_at:
+        try:
+            start = datetime.fromisoformat(started_at.replace("Z", "+00:00"))
+            uptime_seconds = int(
+                (datetime.now(timezone.utc) - start).total_seconds()
+            )
+        except Exception:
+            pass
+
+    return jsonify({
+        "live": is_live,
+        "viewers": viewers,
+        "followers": followers,
+        "subscribers": subscribers,
+        "uptime_seconds": uptime_seconds,
+        "started_at": started_at,
+    })

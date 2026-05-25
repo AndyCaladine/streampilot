@@ -1,14 +1,9 @@
 /* =============================================================
    dashboard.js — shared dashboard initialisation
    Runs on every dashboard page.
-   Handles:
-     - WebSocket connection
-     - Sidebar collapse toggle
-     - Mobile menu toggle
-     - User menu dropdown
-     - ON AIR button state
-     - Topbar channel info
    ============================================================= */
+
+let statsInterval = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -23,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebarCollapseBtn = document.getElementById("sidebarCollapseBtn");
 
   if (sidebar && sidebarCollapseBtn) {
-    // Restore saved state
     const isCollapsed = localStorage.getItem("sp_sidebar_collapsed") === "true";
     if (isCollapsed) sidebar.classList.add("collapsed");
 
@@ -42,7 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
       sidebar.classList.toggle("mobile-open");
     });
 
-    // Close sidebar when clicking outside on mobile
     document.addEventListener("click", (event) => {
       if (
         sidebar.classList.contains("mobile-open") &&
@@ -59,38 +52,80 @@ document.addEventListener("DOMContentLoaded", () => {
   const userMenuDropdown = document.getElementById("userMenuDropdown");
 
   if (userMenuBtn && userMenuDropdown) {
-      userMenuBtn.addEventListener("click", (event) => {
-        event.stopPropagation();
-        userMenuDropdown.classList.toggle("open");
-      });
+    userMenuBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      userMenuDropdown.classList.toggle("open");
+    });
 
-      // Stop clicks inside dropdown from closing it
-      userMenuDropdown.addEventListener("click", (event) => {
-        event.stopPropagation();
-      });
+    userMenuDropdown.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
 
-      // Close when clicking outside
-      document.addEventListener("click", () => {
-        userMenuDropdown.classList.remove("open");
-      });
-    }
+    document.addEventListener("click", () => {
+      userMenuDropdown.classList.remove("open");
+    });
+  }
 
   // -- Stream status from WebSocket --------------------------
   document.addEventListener("sp:stream_status", (event) => {
     updateOnAirStatus(event.detail);
   });
 
-  // -- Load initial channel data -----------------------------
-  loadChannelData();
+  // -- Load real Twitch stats --------------------------------
+  loadStreamStats();
 
 });
+
+
+// ---- Real Twitch stats -------------------------------------
+async function loadStreamStats() {
+  try {
+    const stats = await apiRequest("/api/stream/stats");
+
+    // Don't overwrite stats if simulation is running
+    const isSimulating = document.getElementById("simulateBtn")
+      ?.textContent.includes("Stop");
+
+    const onAirBtn   = document.getElementById("onAirBtn");
+    const onAirLabel = document.getElementById("onAirLabel");
+
+    if (stats.live && !isSimulating) {
+      onAirBtn?.classList.add("live");
+      onAirBtn?.classList.remove("simulating");
+      if (onAirLabel) onAirLabel.textContent = "ON AIR";
+    } else if (!isSimulating) {
+      onAirBtn?.classList.remove("live", "simulating");
+      if (onAirLabel) onAirLabel.textContent = "OFFLINE";
+    }
+
+    if (!isSimulating) {
+      const viewers   = document.getElementById("statViewers");
+      const followers = document.getElementById("statFollowers");
+      const subs      = document.getElementById("statSubscribers");
+      const uptime    = document.getElementById("statUptime");
+
+      if (viewers)   setStatValue("statViewers",     stats.viewers     !== null ? formatNumber(stats.viewers)     : "—");
+      if (followers) setStatValue("statFollowers",   stats.followers   !== null ? formatNumber(stats.followers)   : "—");
+      if (subs)      setStatValue("statSubscribers", stats.subscribers !== null ? formatNumber(stats.subscribers) : "—");
+      if (uptime && stats.live && stats.uptime_seconds !== null) {
+        setStatValue("statUptime", formatUptime(stats.uptime_seconds));
+      }
+    }
+
+    // Poll every 60 seconds
+    if (!statsInterval) {
+      statsInterval = setInterval(loadStreamStats, 60000);
+    }
+
+  } catch (error) {
+    console.warn("[Dashboard] Could not load stream stats:", error.message);
+  }
+}
 
 
 async function loadChannelData() {
   try {
     const data = await apiRequest("/api/channel");
-
-    // Update topbar stats if present
     if (data.viewer_count !== undefined) {
       updateOnAirStatus(data);
     }
@@ -102,7 +137,6 @@ async function loadChannelData() {
 
 function updateOnAirStatus(data) {
   const onAirBtn   = document.getElementById("onAirBtn");
-  const onAirDot   = document.getElementById("onAirDot");
   const onAirLabel = document.getElementById("onAirLabel");
 
   if (!onAirBtn) return;
@@ -117,24 +151,23 @@ function updateOnAirStatus(data) {
     if (onAirLabel) onAirLabel.textContent = "OFFLINE";
   }
 
-  // Update stat pills
   if (data.viewer_count !== undefined) {
-    const viewerEl = document.getElementById("statViewers");
-    if (viewerEl) viewerEl.textContent = formatNumber(data.viewer_count);
+    const el = document.getElementById("statViewers");
+    if (el) el.textContent = formatNumber(data.viewer_count);
   }
 
   if (data.follower_count !== undefined) {
-    const followerEl = document.getElementById("statFollowers");
-    if (followerEl) followerEl.textContent = formatNumber(data.follower_count);
+    const el = document.getElementById("statFollowers");
+    if (el) el.textContent = formatNumber(data.follower_count);
   }
 
   if (data.subscriber_count !== undefined) {
-    const subEl = document.getElementById("statSubscribers");
-    if (subEl) subEl.textContent = formatNumber(data.subscriber_count);
+    const el = document.getElementById("statSubscribers");
+    if (el) el.textContent = formatNumber(data.subscriber_count);
   }
 
   if (data.uptime_seconds !== undefined) {
-    const uptimeEl = document.getElementById("statUptime");
-    if (uptimeEl) uptimeEl.textContent = formatUptime(data.uptime_seconds);
+    const el = document.getElementById("statUptime");
+    if (el) el.textContent = formatUptime(data.uptime_seconds);
   }
 }
