@@ -46,8 +46,9 @@ function updateLocalClock() {
   timeEl.textContent = formatClockTime(now, clockFormat);
 
   if (labelEl) {
-    labelEl.textContent = getTimezoneAbbreviation();
-  }
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      labelEl.textContent = tz.split("/").pop().replace(/_/g, " ");
+    }
 }
 
 
@@ -103,14 +104,12 @@ function createWorldClock(timezone) {
   labelEl.className = "clock__label";
 
   try {
-    labelEl.textContent = Intl.DateTimeFormat("en-GB", {
-      timeZone:     timezone,
-      timeZoneName: "short",
-    }).formatToParts(new Date())
-      .find(p => p.type === "timeZoneName")?.value || timezone;
-  } catch {
-    labelEl.textContent = timezone;
-  }
+      // Use the city name from the timezone string e.g. "America/New_York" → "New York"
+      const city = timezone.split("/").pop().replace(/_/g, " ");
+      labelEl.textContent = city;
+    } catch {
+      labelEl.textContent = timezone;
+    }
 
   div.appendChild(timeEl);
   div.appendChild(labelEl);
