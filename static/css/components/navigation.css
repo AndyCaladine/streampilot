@@ -90,12 +90,11 @@
 }
 
 .stat-pill svg {
-  color: var(--muted);
+  color: var(--accent);
   flex-shrink: 0;
   width: 16px;
   height: 16px;
 }
-
 .stat-pill__label {
   font-size: 13px;
   color: var(--muted);
