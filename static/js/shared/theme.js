@@ -8,6 +8,15 @@ const COLOURS = ["default", "blue", "green", "red", "pink", "yellow", "mono", "t
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  // ---- Initialise LED arc state on load -------------------
+  const arcOnLoad = document.getElementById("ledArc");
+  if (arcOnLoad) {
+    const loadedTheme = document.documentElement.getAttribute("data-theme") || "light";
+    if (loadedTheme === "dark") {
+      arcOnLoad.setAttribute("class", "led-toggle__arc led-full-on");
+    }
+  }
+
   // ---- Theme toggle ---------------------------------------
   const toggle = document.getElementById("themeToggleInput");
   const label  = document.getElementById("themeToggle");
@@ -15,7 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (toggle && label) {
     const current = document.documentElement.getAttribute("data-theme") || "light";
     toggle.checked = current === "dark";
-    label.classList.toggle("dark", current === "dark");
 
     toggle.addEventListener("change", () => {
       const next = toggle.checked ? "dark" : "light";
@@ -32,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
   applyColour(currentColour, false);
   markActiveSwatch(currentColour, false);
 
-  // Bind all swatches (dropdown + settings)
   document.querySelectorAll("[data-colour-pick]").forEach(swatch => {
     swatch.addEventListener("click", () => {
       const colour = swatch.dataset.colourPick;
@@ -68,9 +75,26 @@ function applyTheme(theme) {
   localStorage.setItem("sp_theme", theme);
 
   const toggle = document.getElementById("themeToggleInput");
-  const label  = document.getElementById("themeToggle");
   if (toggle) toggle.checked = theme === "dark";
-  if (label)  label.classList.toggle("dark", theme === "dark");
+
+  // LED sweep animation
+  const arc = document.getElementById("ledArc");
+  if (arc) {
+    arc.setAttribute("class", "led-toggle__arc");
+    setTimeout(() => {
+      if (theme === "dark") {
+        arc.setAttribute("class", "led-toggle__arc led-sweep-on");
+        setTimeout(() => {
+          arc.setAttribute("class", "led-toggle__arc led-full-on");
+        }, 850);
+      } else {
+        arc.setAttribute("class", "led-toggle__arc led-sweep-off");
+        setTimeout(() => {
+          arc.setAttribute("class", "led-toggle__arc");
+        }, 850);
+      }
+    }, 20);
+  }
 }
 
 

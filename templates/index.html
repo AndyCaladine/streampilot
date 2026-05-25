@@ -11,58 +11,8 @@
 {% block content %}
 <div class="landing-wrapper">
 
-  <!-- Navigation -->
-    <nav class="landing-nav">
-      <div class="landing-nav__logo">
-        <img src="{{ url_for('static', filename='images/smalllogo.light.PNG') }}"
-            alt="StreamPilot" class="landing-nav__icon logo-light">
-        <img src="{{ url_for('static', filename='images/smalllogo.dark.PNG') }}"
-            alt="StreamPilot" class="landing-nav__icon logo-dark">
-        <span class="landing-nav__wordmark">STREAM<span>PILOT</span></span>
-      </div>
-      <div class="landing-nav__links">
-        <a href="#features">Features</a>
-        <a href="#beta">Beta</a>
-        <span class="badge badge--danger landing-nav__beta-badge">
-          <span class="landing-nav__beta-dot"></span>
-          Private Beta
-        </span>
-          <label class="theme-switch" id="landingThemeToggle" aria-label="Toggle theme">
-          <input type="checkbox" id="themeToggleInput">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 36">
-            <rect id="container" x="1" y="1" width="68" height="34" rx="17" ry="17" fill="#e8e8e8" stroke="#e2e2e7" stroke-width="1"/>
-            <g id="stars">
-              <circle cx="18" cy="10" r="1.5" fill="white"/>
-              <circle cx="28" cy="18" r="1" fill="white"/>
-              <circle cx="22" cy="22" r="1" fill="white"/>
-              <circle cx="32" cy="10" r="1" fill="white"/>
-              <circle cx="14" cy="18" r="1" fill="white"/>
-            </g>
-            <g id="patches">
-              <circle cx="48" cy="22" r="3" fill="#ddeeff" opacity="0.5"/>
-              <circle cx="55" cy="16" r="2" fill="#ddeeff" opacity="0.4"/>
-            </g>
-            <g id="cloud">
-              <circle cx="48" cy="22" r="4" fill="white"/>
-              <circle cx="55" cy="20" r="5" fill="white"/>
-              <circle cx="61" cy="22" r="4" fill="white"/>
-              <rect x="48" y="22" width="13" height="5" fill="white"/>
-            </g>
-            <g id="button" transform="translate(2, 2.333)">
-              <circle cx="15" cy="15" r="13" fill="#ffcc00"/>
-              <g id="sun">
-                <circle cx="15" cy="15" r="9" fill="#ffaa00"/>
-              </g>
-              <g id="moon">
-                <circle cx="15" cy="15" r="9" fill="#f5f5f5"/>
-                <circle cx="19" cy="11" r="6" fill="#2b4360"/>
-              </g>
-            </g>
-          </svg>
-        </label>
-        <a href="{{ url_for('login') }}" class="btn btn--primary btn--sm">Log in</a>
-      </div>
-    </nav>
+<!-- Navigation -->
+  {% include "partials/landing_nav.html" %}
 
   <!-- Hero -->
   <section class="landing-hero">
@@ -329,25 +279,5 @@
   </footer>
 
 </div>
-{% endblock %}
 
-{% block scripts %}
-<script>
-  (function () {
-    const toggle = document.getElementById("themeToggleInput");
-    const label  = document.getElementById("landingThemeToggle");
-    if (!toggle || !label) return;
-
-    const current = document.documentElement.getAttribute("data-theme") || "light";
-    toggle.checked = current === "dark";
-    label.classList.toggle("dark", current === "dark");
-
-    toggle.addEventListener("change", function () {
-      const next = toggle.checked ? "dark" : "light";
-      document.documentElement.setAttribute("data-theme", next);
-      localStorage.setItem("sp_theme", next);
-      label.classList.toggle("dark", toggle.checked);
-    });
-  })();
-</script>
 {% endblock %}

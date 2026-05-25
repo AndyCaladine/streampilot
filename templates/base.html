@@ -44,6 +44,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/forms.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/badges.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/feedback.css') }}">
+  
 
   <!-- Page specific CSS -->
   {% block styles %}{% endblock %}
@@ -68,8 +69,9 @@
   <!-- Page content -->
   {% block content %}{% endblock %}
 
-  <!-- Main JS — loaded on every page -->
+<!-- Main JS — loaded on every page -->
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/shared/theme.js') }}"></script>
 
   <!-- Page specific JS -->
   {% block scripts %}{% endblock %}
