@@ -83,7 +83,7 @@ function loadWorldClocks() {
     return;
   }
 
-  worldClocks.forEach(timezone => {
+  worldClocks.slice(0, 2).forEach(timezone => {
     const clockEl = createWorldClock(timezone);
     container.appendChild(clockEl);
   });
