@@ -1,0 +1,118 @@
+{# ============================================================
+   partials/settings_content.html
+   HTMX partial — replaces #pageContent innerHTML on nav swap.
+   ============================================================ #}
+
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Settings</h1>
+    <p class="page-subtitle">Manage your account and overlay connections</p>
+  </div>
+  <div class="page-header__actions"></div>
+</div>
+
+<div class="settings-layout">
+
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">OBS Overlay URLs</h2>
+    </div>
+    <div class="card__body">
+      <p class="text-muted mb-16">
+        Add each URL as a Browser Source in OBS. Set the width to 1920,
+        height to 1080, and tick transparent background.
+      </p>
+      <div id="overlayUrls">
+        <p class="empty-state">Loading overlay URLs...</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Connection Status</h2>
+      <button class="btn btn--secondary btn--sm" id="refreshStatus">Refresh</button>
+    </div>
+    <div class="card__body" id="connectionStatus">
+      <p class="empty-state">Checking connections...</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Clock Settings</h2>
+    </div>
+    <div class="card__body">
+      <div class="form-group mb-16">
+        <label class="form-label">Clock Format</label>
+        <div class="btn-group">
+          <button class="btn btn--secondary btn--sm clock-format-btn active" data-format="24">24 Hour</button>
+          <button class="btn btn--secondary btn--sm clock-format-btn" data-format="12">12 Hour</button>
+        </div>
+      </div>
+      <div class="form-group mt-16">
+        <label class="form-label">World Clocks</label>
+        <div id="worldClocksList"></div>
+        <button class="btn btn--secondary btn--sm mt-8" id="addWorldClock">
+          Add World Clock
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Appearance</h2>
+    </div>
+    <div class="card__body">
+      <div class="form-group mt-16">
+        <label class="form-label">Dashboard Tutorial</label>
+        <p class="form-hint mb-8">Restart the onboarding tour next time you visit the dashboard.</p>
+        <button class="btn btn--secondary btn--sm" id="restartTutorial">Restart Tutorial</button>
+      </div>
+      <div class="form-group mb-24">
+        <label class="form-label">Mode</label>
+        <p class="form-hint mb-8">Use the Day/Night toggle in the top menu to switch between light and dark mode.</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Colour Theme</label>
+        <p class="form-hint mb-16">Choose an accent colour to match your stream's vibe.</p>
+        <div class="colour-picker-grid">
+          <button class="colour-picker-swatch" data-colour-pick="default" title="Default">
+            <span class="colour-picker-swatch__dot" style="background:#7c3aed;"></span>
+            <span class="colour-picker-swatch__label">Default</span>
+          </button>
+          <button class="colour-picker-swatch" data-colour-pick="blue" title="Blue">
+            <span class="colour-picker-swatch__dot" style="background:#2563eb;"></span>
+            <span class="colour-picker-swatch__label">Blue</span>
+          </button>
+          <button class="colour-picker-swatch" data-colour-pick="green" title="Green">
+            <span class="colour-picker-swatch__dot" style="background:#16a34a;"></span>
+            <span class="colour-picker-swatch__label">Green</span>
+          </button>
+          <button class="colour-picker-swatch" data-colour-pick="red" title="Red">
+            <span class="colour-picker-swatch__dot" style="background:#dc2626;"></span>
+            <span class="colour-picker-swatch__label">Red</span>
+          </button>
+          <button class="colour-picker-swatch" data-colour-pick="pink" title="Pink">
+            <span class="colour-picker-swatch__dot" style="background:#db2777;"></span>
+            <span class="colour-picker-swatch__label">Pink</span>
+          </button>
+          <button class="colour-picker-swatch" data-colour-pick="yellow" title="Yellow">
+            <span class="colour-picker-swatch__dot" style="background:#d97706;"></span>
+            <span class="colour-picker-swatch__label">Yellow</span>
+          </button>
+          <button class="colour-picker-swatch" data-colour-pick="mono" title="Mono">
+            <span class="colour-picker-swatch__dot" style="background:#374151;"></span>
+            <span class="colour-picker-swatch__label">Mono</span>
+          </button>
+          <button class="colour-picker-swatch" data-colour-pick="teal" title="Teal">
+            <span class="colour-picker-swatch__dot" style="background:#0d9488;"></span>
+            <span class="colour-picker-swatch__label">Teal</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

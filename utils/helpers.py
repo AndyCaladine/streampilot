@@ -1,8 +1,19 @@
 import secrets
 from datetime import datetime
 from functools import wraps
-from flask import session, redirect, url_for, jsonify
+from flask import session, redirect, url_for, jsonify, request
 
+# =============================================================
+# HTMX detection
+# =============================================================
+
+def is_htmx():
+    """
+    Returns True when the request was made by HTMX (i.e a nav swap, 
+    not a full browser load). Routes use this to decide whether to
+    return a full page or a content-only partial.
+    """
+    return request.headers.get("HX-Request") == "true"
 
 # =============================================================
 # Authentication decorators

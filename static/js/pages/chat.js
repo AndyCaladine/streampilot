@@ -1,8 +1,12 @@
 /* =============================================================
    chat.js — live chat page
-   To be built in Phase 2 — Twitch EventSub integration
+   Phase 2: Twitch EventSub integration
    ============================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+function initChat() {
+  if (!document.querySelector(".chat-card")) return;
   // Chat functionality coming in Phase 2
-});
+}
+
+document.addEventListener("DOMContentLoaded", initChat);
+document.addEventListener("htmx:afterSwap",   initChat);

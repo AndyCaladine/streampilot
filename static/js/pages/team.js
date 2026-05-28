@@ -1,8 +1,12 @@
 /* =============================================================
    team.js — team management page
-   To be built in Phase 2
+   Phase 2: mod invite and management
    ============================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+function initTeam() {
+  if (!document.getElementById("teamList")) return;
   // Team functionality coming in Phase 2
-});
+}
+
+document.addEventListener("DOMContentLoaded", initTeam);
+document.addEventListener("htmx:afterSwap",   initTeam);

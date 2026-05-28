@@ -2,9 +2,9 @@
    alerts.js — alerts configuration page
    ============================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+function initAlerts() {
+  if (!document.querySelector("[data-test-alert]")) return;
 
-  // Wire up test alert buttons
   document.querySelectorAll("[data-test-alert]").forEach(button => {
     button.addEventListener("click", async () => {
       const alertType = button.dataset.testAlert;
@@ -16,5 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+}
 
-});
+document.addEventListener("DOMContentLoaded", initAlerts);
+document.addEventListener("htmx:afterSwap",   initAlerts);

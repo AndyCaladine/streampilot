@@ -2,10 +2,11 @@
    settings.js — settings page
    ============================================================= */
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function initSettings() {
+  if (!document.getElementById("connectionStatus")) return;
+
   await loadOverlayStatus();
 
-  // Refresh button
   document.getElementById("refreshStatus")
     ?.addEventListener("click", loadOverlayStatus);
 
@@ -20,36 +21,33 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  // ---- World clocks ----------------------------------------
-  renderWorldClocksList();
-
-  document.getElementById("addWorldClock")?.addEventListener("click", () => {
-    showTimezonePickerModal();
-  });
-
-  // Theme buttons
-  document.querySelectorAll(".theme-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".theme-btn")
-        .forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      applyTheme(btn.dataset.theme);
-      showToast(`Theme set to ${btn.dataset.theme}.`, "success");
-    });
-  });
-
-  // Mark active theme button
-  const currentTheme = localStorage.getItem("sp_theme") || "light";
-  document.querySelector(`[data-theme="${currentTheme}"]`)
-    ?.classList.add("active");
-
   // Mark active clock format
   const currentFormat = localStorage.getItem("sp_clock_format") || "24";
   document.querySelector(`[data-format="${currentFormat}"]`)
     ?.classList.add("active");
-});
+
+  // Restart tutorial button
+  const restartBtn = document.getElementById("restartTutorial");
+  if (restartBtn) {
+    restartBtn.addEventListener("click", async () => {
+      await resetOnboarding();
+      restartBtn.textContent = "Done — visit the dashboard to start the tour";
+      restartBtn.disabled = true;
+    });
+  }
+
+  // World clocks
+  renderWorldClocksList();
+  document.getElementById("addWorldClock")?.addEventListener("click", () => {
+    showTimezonePickerModal();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initSettings);
+document.addEventListener("htmx:afterSwap",   initSettings);
 
 
+// ---- Overlay status ----------------------------------------
 async function loadOverlayStatus() {
   try {
     const status = await apiRequest("/api/overlays/status");
@@ -72,16 +70,8 @@ async function loadOverlayStatus() {
   }
 }
 
-const restartBtn = document.getElementById("restartTutorial");
-  if (restartBtn) {
-    restartBtn.addEventListener("click", async () => {
-      await resetOnboarding();
-      restartBtn.textContent = "Done — visit the dashboard to start the tour";
-      restartBtn.disabled = true;
-    });
-  }
 
-  // ---- World clocks ------------------------------------------
+// ---- World clocks ------------------------------------------
 const COMMON_TIMEZONES = [
   { label: "London (GMT/BST)",       tz: "Europe/London" },
   { label: "New York (EST/EDT)",      tz: "America/New_York" },
@@ -136,17 +126,15 @@ function renderWorldClocksList() {
 }
 
 function removeWorldClockFromSettings(tz) {
-  removeWorldClock(tz); // from clock.js
+  removeWorldClock(tz);
   renderWorldClocksList();
   showToast("World clock removed.", "success");
 }
 
 function showTimezonePickerModal() {
-  // Remove existing modal if any
   document.getElementById("tzModal")?.remove();
 
   const saved = getSavedWorldClocks();
-
   const modal = document.createElement("div");
   modal.id = "tzModal";
   modal.style.cssText = `
@@ -166,13 +154,7 @@ function showTimezonePickerModal() {
       box-shadow: var(--shadow-lg);
     ">
       <h3 style="font-size:16px;font-weight:600;margin-bottom:16px;color:var(--text)">Add World Clock</h3>
-      <input
-        type="text"
-        id="tzSearch"
-        placeholder="Search timezone..."
-        class="form-input"
-        style="margin-bottom:12px"
-      >
+      <input type="text" id="tzSearch" placeholder="Search timezone..." class="form-input" style="margin-bottom:12px">
       <div id="tzList" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:4px"></div>
       <div style="margin-top:16px;display:flex;justify-content:flex-end">
         <button class="btn btn--secondary btn--sm" id="tzCancel">Cancel</button>
@@ -208,7 +190,6 @@ function showTimezonePickerModal() {
   }
 
   renderTzList();
-
   tzSearch.addEventListener("input", () => renderTzList(tzSearch.value));
   tzSearch.focus();
 
@@ -217,7 +198,7 @@ function showTimezonePickerModal() {
 }
 
 function selectTimezone(tz) {
-  addWorldClock(tz); // from clock.js
+  addWorldClock(tz);
   document.getElementById("tzModal")?.remove();
   renderWorldClocksList();
   showToast("World clock added.", "success");

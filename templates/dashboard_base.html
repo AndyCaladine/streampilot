@@ -48,7 +48,11 @@
       <span class="sidebar__nav-label">Cockpit</span>
 
       <a href="{{ url_for('streamer.dashboard') }}"
-         class="sidebar__nav-item {% if request.endpoint == 'streamer.dashboard' %}active{% endif %}">
+        hx-get="{{ url_for('streamer.dashboard') }}"
+        hx-target="#pageContent"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        class="sidebar__nav-item {% if request.endpoint == 'streamer.dashboard' %}active{% endif %}">
         <span class="sidebar__nav-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
@@ -59,7 +63,11 @@
       </a>
 
       <a href="{{ url_for('streamer.chat') }}"
-         class="sidebar__nav-item {% if request.endpoint == 'streamer.chat' %}active{% endif %}">
+        hx-get="{{ url_for('streamer.chat') }}"
+        hx-target="#pageContent"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        class="sidebar__nav-item {% if request.endpoint == 'streamer.chat' %}active{% endif %}">
         <span class="sidebar__nav-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
@@ -71,7 +79,11 @@
       <span class="sidebar__nav-label">Tools</span>
 
       <a href="{{ url_for('streamer.commands') }}"
-         class="sidebar__nav-item {% if request.endpoint == 'streamer.commands' %}active{% endif %}">
+        hx-get="{{ url_for('streamer.commands') }}"
+        hx-target="#pageContent"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        class="sidebar__nav-item {% if request.endpoint == 'streamer.commands' %}active{% endif %}">
         <span class="sidebar__nav-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
@@ -81,7 +93,11 @@
       </a>
 
       <a href="{{ url_for('streamer.alerts') }}"
-         class="sidebar__nav-item {% if request.endpoint == 'streamer.alerts' %}active{% endif %}">
+        hx-get="{{ url_for('streamer.alerts') }}"
+        hx-target="#pageContent"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        class="sidebar__nav-item {% if request.endpoint == 'streamer.alerts' %}active{% endif %}">
         <span class="sidebar__nav-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
@@ -91,7 +107,11 @@
       </a>
 
       <a href="{{ url_for('streamer.panels') }}"
-         class="sidebar__nav-item {% if request.endpoint == 'streamer.panels' %}active{% endif %}">
+        hx-get="{{ url_for('streamer.panels') }}"
+        hx-target="#pageContent"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        class="sidebar__nav-item {% if request.endpoint == 'streamer.panels' %}active{% endif %}">
         <span class="sidebar__nav-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8"/>
@@ -103,7 +123,11 @@
       <span class="sidebar__nav-label">Flight Crew</span>
 
       <a href="{{ url_for('streamer.team') }}"
-         class="sidebar__nav-item {% if request.endpoint == 'streamer.team' %}active{% endif %}">
+        hx-get="{{ url_for('streamer.team') }}"
+        hx-target="#pageContent"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        class="sidebar__nav-item {% if request.endpoint == 'streamer.team' %}active{% endif %}">
         <span class="sidebar__nav-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
@@ -118,8 +142,12 @@
 
     <!-- Sidebar footer -->
     <div class="sidebar__footer">
-      <a href="{{ url_for('streamer.settings') }}"
-         class="sidebar__nav-item {% if request.endpoint == 'streamer.settings' %}active{% endif %}">
+    <a href="{{ url_for('streamer.settings') }}"
+      hx-get="{{ url_for('streamer.settings') }}"
+      hx-target="#pageContent"
+      hx-swap="innerHTML"
+      hx-push-url="true"
+      class="sidebar__nav-item {% if request.endpoint == 'streamer.settings' %}active{% endif %}">
         <span class="sidebar__nav-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"/>
@@ -336,7 +364,7 @@
     </header>
 
     <!-- Page content -->
-    <main class="page-content">
+    <main class="page-content" id="pageContent">
       <div class="page-header">
         <div class="page-header__left">
           <h1 class="page-title">{% block page_title %}{% endblock %}</h1>          
@@ -356,6 +384,8 @@
 {% endblock %}
 
 {% block scripts %}
+  <!-- HTMX — intercepts nav clicks, swaps #pageContent without a full reload -->
+  <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
   <!-- Socket.IO -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <!-- Shared dashboard scripts -->
@@ -363,6 +393,23 @@
   <script src="{{ url_for('static', filename='js/shared/clock.js') }}"></script>
   <script src="{{ url_for('static', filename='js/shared/dashboard.js') }}"></script>
   <script src="{{ url_for('static', filename='js/shared/onboarding.js') }}"></script>
-  <!-- Page specific scripts -->
-  {% block page_scripts %}{% endblock %}
+  <!-- Page scripts — loaded once in the shell, survive all nav swaps -->
+  <script src="{{ url_for('static', filename='js/pages/dashboard.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pages/demo.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pages/chat.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pages/commands.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pages/alerts.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pages/panels.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pages/team.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pages/settings.js') }}"></script>
+   <script>
+    // Update the active nav item after each HTMX swap
+    document.addEventListener("htmx:afterSettle", () => {
+      const path = window.location.pathname;
+      document.querySelectorAll(".sidebar__nav-item").forEach(link => {
+        const href = link.getAttribute("href");
+        link.classList.toggle("active", href === path);
+      });
+    });
+  </script>
 {% endblock %}

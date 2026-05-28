@@ -2,10 +2,11 @@
    commands.js — commands management page
    ============================================================= */
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function initCommands() {
+  if (!document.getElementById("commandsList")) return;
+
   await loadCommands();
 
-  // New command form toggle
   document.getElementById("newCommandBtn")
     ?.addEventListener("click", () => {
       document.getElementById("newCommandForm").style.display = "block";
@@ -21,10 +22,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("saveNewCommand")
     ?.addEventListener("click", saveCommand);
 
-  // Export CSV
   document.getElementById("exportCommandsBtn")
     ?.addEventListener("click", exportCommandsCSV);
-});
+}
+
+document.addEventListener("DOMContentLoaded", initCommands);
+document.addEventListener("htmx:afterSwap",   initCommands);
 
 
 async function loadCommands() {

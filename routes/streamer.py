@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request, flash
-from utils.helpers import login_required
+from utils.helpers import login_required, is_htmx
 
 streamer_bp = Blueprint("streamer", __name__)
 
@@ -18,6 +18,8 @@ def dashboard():
     Main dashboard - stream stats, event feed, active goals. 
     This will be the first page the streamer sees after login in. 
     """
+    if is_htmx():
+        return render_template("partials/dashboard_content.html")
     return render_template("dashboard.html")
 
 @streamer_bp.route("/chat")
@@ -27,6 +29,8 @@ def chat():
     Live chat viewer with moderation tools. 
     This shows incoming chat messages and mod actions in real time. 
     """
+    if is_htmx():
+        return render_template("partials/chat_content.html")
     return render_template("chat.html")
 
 @streamer_bp.route("/commands")
@@ -36,6 +40,8 @@ def commands():
     Bot command management. 
     Create, edit, enable and disable chat commands. 
     """
+    if is_htmx():
+        return render_template("partials/commands_content.html")
     return render_template("commands.html")
 
 @streamer_bp.route("/alerts")
@@ -45,6 +51,8 @@ def alerts():
     Alert Config.
     Set up follow, sub, raid and bits alerts for OBS overlay.
     """
+    if is_htmx():
+        return render_template("partials/alerts_content.html")
     return render_template("alerts.html")
 
 @streamer_bp.route("/panels")
@@ -54,6 +62,8 @@ def panels():
     Timed on screen panel management. 
     Create panels, set schedules and config animations. 
     """
+    if is_htmx():
+        return render_template("partials/panels_content.html")
     return render_template("panels.html")
 
 @streamer_bp.route("/team")
@@ -63,6 +73,8 @@ def team():
     Team Management.
     Invite and manage mods and lead mods for the channel. 
     """
+    if is_htmx():
+        return render_template("partials/team_content.html")
     return render_template("team.html")
 
 @streamer_bp.route("/settings")
@@ -72,6 +84,8 @@ def settings():
     Account and channel settings. 
     Manage overlay URLs, platform connections and preferances. 
     """
+    if is_htmx():
+        return render_template("partials/settings_content.html")
     return render_template("settings.html")
 
 @streamer_bp.route("/select-account", methods=["GET", "POST"])

@@ -6,17 +6,8 @@ let simulateInterval = null;
 let uptimeSeconds    = 0;
 let uptimeTick       = null;
 
-document.addEventListener("DOMContentLoaded", async () => {
-
-  // Warn if navigating away during simulation
-  document.querySelectorAll(".sidebar__nav-item").forEach(link => {
-    link.addEventListener("click", (e) => {
-      if (simulateInterval) {
-        const confirm = window.confirm("Leaving the dashboard will stop the simulation. Continue?");
-        if (!confirm) e.preventDefault();
-      }
-    });
-  });
+function initDashboard() {
+  if (!document.getElementById("eventFeed")) return;
 
   // Load overlay connection status
   loadOverlayStatus();
@@ -25,18 +16,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.addEventListener("sp:alert", (event) => {
     addEventFeedItem(event.detail);
   });
-
-  // Simulate live button
-  const simulateBtn = document.getElementById("simulateBtn");
-  if (simulateBtn) {
-    simulateBtn.addEventListener("click", () => {
-      if (simulateInterval) {
-        stopSimulation(simulateBtn);
-      } else {
-        startSimulation(simulateBtn);
-      }
-    });
-  }
 
   // Stat pill hide/show on click
   document.querySelectorAll(".stat-pill").forEach(pill => {
@@ -55,8 +34,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   });
+}
 
-});
+document.addEventListener("DOMContentLoaded", initDashboard);
+document.addEventListener("htmx:afterSwap", initDashboard);
 
 
 // ---- Overlay status ----------------------------------------
@@ -163,7 +144,6 @@ function startSimulation(simulateBtn) {
   simulateBtn.textContent = "⏹ Stop Sim";
   simulateBtn.classList.replace("btn--secondary", "btn--danger");
 
-  // Start demo data
   startDemo();
 }
 
@@ -187,11 +167,8 @@ function stopSimulation(simulateBtn) {
   simulateBtn.textContent = "▶ Simulate Live";
   simulateBtn.classList.replace("btn--danger", "btn--secondary");
 
-  // Stop demo data
   stopDemo();
-
- //Restore real data
- loadStreamStats(); 
+  loadStreamStats();
 }
 
 
@@ -213,3 +190,17 @@ function formatUptime(seconds) {
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+// ---- Simulate button — wired once in the shell -------------
+document.addEventListener("DOMContentLoaded", () => {
+  const simulateBtn = document.getElementById("simulateBtn");
+  if (simulateBtn) {
+    simulateBtn.addEventListener("click", () => {
+      if (simulateInterval) {
+        stopSimulation(simulateBtn);
+      } else {
+        startSimulation(simulateBtn);
+      }
+    });
+  }
+});

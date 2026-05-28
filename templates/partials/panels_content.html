@@ -1,0 +1,29 @@
+{# ============================================================
+   partials/panels_content.html
+   HTMX partial — replaces #pageContent innerHTML on nav swap.
+   ============================================================ #}
+
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-title">Panels</h1>
+    <p class="page-subtitle">Schedule information panels to appear on your stream</p>
+  </div>
+  <div class="page-header__actions">
+    <button class="btn btn--primary" id="newPanelBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      New Panel
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card__header">
+    <h2 class="card__title">Your Panels</h2>
+    <span class="card__badge" id="panelCount">0</span>
+  </div>
+  <div class="card__body" id="panelsList">
+    <p class="empty-state">No panels yet. Create your first one above.</p>
+  </div>
+</div>
