@@ -414,3 +414,48 @@ def stream_stats():
         "uptime_seconds": uptime_seconds,
         "started_at": started_at,
     })
+
+# =============================================================
+# Dashboard layout
+# Saves and loads the user's dashboard widget layout.
+# Stored in user_preferences as key = 'dashboard_layout',
+# value = JSON string.
+# =============================================================
+
+@api_bp.route("/dashboard/layout", methods=["GET"])
+@api_login_required
+def get_dashboard_layout():
+    conn = get_db_connection()
+    p = placeholder()
+    user_id = session.get("user_id")
+
+    row = conn.execute(
+        f"SELECT value FROM user_preferences WHERE user_id = {p} AND preference = {p}",
+        (user_id, "dashboard_layout")
+    ).fetchone()
+
+    if row:
+        return jsonify({"layout":  row["value"]})
+    return jsonify({"layout": None})
+
+@api_bp.route("/dashboard/layout", methods=["POST"])
+@api_login_required
+def save_dashboard_layout():
+    conn = get_db_connection()
+    p = placeholder()
+    user_id = session.get("user_id")
+    layout = request.json.get("layout")
+
+    if not layout:
+        return jsonify({"error": "No layout provided"}), 400
+    
+    conn.execute(
+            f"""INSERT INTO user_preferences (user_id, preference, value, updated_at)
+                VALUES ({p}, {p}, {p}, CURRENT_TIMESTAMP)
+                ON CONFLICT (user_id, preference)
+                DO UPDATE SET value = {p}, updated_at = CURRENT_TIMESTAMP""",
+            (user_id, "dashboard_layout", layout, layout)
+        )
+    conn.commit()
+    return jsonify({"status": "ok"})
+

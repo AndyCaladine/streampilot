@@ -1,0 +1,114 @@
+/* =============================================================
+   dashboard-layout.css — dashboard widget grid and edit mode
+   ============================================================= */
+
+/* ---- Widget grid ------------------------------------------ */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.dashboard-widget {
+  position: relative;
+  border-radius: var(--radius);
+  transition: box-shadow var(--transition);
+}
+
+.dashboard-widget--wide {
+  grid-column: span 2;
+}
+
+.dashboard-widget--tall .card__body {
+  min-height: 300px;
+}
+
+/* ---- Edit mode -------------------------------------------- */
+.dashboard-widget.edit-mode {
+  cursor: grab;
+  outline: 2px dashed var(--border);
+  outline-offset: 2px;
+}
+
+.dashboard-widget.edit-mode:hover {
+  outline-color: var(--accent);
+}
+
+.dashboard-widget.dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+}
+
+.dashboard-widget__edit-handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--accent);
+  border-radius: var(--radius) var(--radius) 0 0;
+  z-index: 10;
+}
+
+.dashboard-widget__drag-icon {
+  color: white;
+  font-size: 16px;
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.dashboard-widget__title {
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-widget__remove {
+  color: white;
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+  flex-shrink: 0;
+}
+
+.dashboard-widget__remove:hover {
+  background: rgba(0,0,0,0.2);
+}
+
+.dashboard-widget.edit-mode .card {
+  margin-top: 28px;
+}
+
+/* ---- Edit mode toolbar ------------------------------------ */
+.dashboard-edit-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--accent-light);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+}
+
+.dashboard-edit-toolbar__msg {
+  flex: 1;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ---- Responsive ------------------------------------------- */
+@media (max-width: 1024px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .dashboard-widget--wide { grid-column: span 1; }
+}

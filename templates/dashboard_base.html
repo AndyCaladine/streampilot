@@ -4,6 +4,7 @@
 
 {% block styles %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard-layout.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/onboarding.css') }}">
  
   {% block page_styles %}{% endblock %}
@@ -395,6 +396,7 @@
   <script src="{{ url_for('static', filename='js/shared/onboarding.js') }}"></script>
   <!-- Page scripts — loaded once in the shell, survive all nav swaps -->
   <script src="{{ url_for('static', filename='js/pages/dashboard.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pages/dashboard-layout.js') }}"></script>
   <script src="{{ url_for('static', filename='js/pages/demo.js') }}"></script>
   <script src="{{ url_for('static', filename='js/pages/chat.js') }}"></script>
   <script src="{{ url_for('static', filename='js/pages/commands.js') }}"></script>
