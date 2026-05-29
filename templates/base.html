@@ -28,14 +28,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 
-  <!-- Main CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-  <!-- Base CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base/variables.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base/reset.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base/typography.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base/layout.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base/utilities.css') }}">
+<!-- Base CSS — variables must load first -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base/variables.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base/reset.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base/typography.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base/layout.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base/utilities.css') }}">
+<!-- Main CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 
   <!-- Component CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components/navigation.css') }}">

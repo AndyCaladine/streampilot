@@ -237,3 +237,16 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
     expires_at  TIMESTAMPTZ NOT NULL,
     created_at  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS chat_profiles (
+    id              SERIAL PRIMARY KEY,
+    channel_id      INTEGER NOT NULL REFERENCES channels(id),
+    twitch_user_id  TEXT    NOT NULL,
+    twitch_login    TEXT    NOT NULL,
+    nickname        TEXT,
+    notes           TEXT,
+    flag            TEXT    NOT NULL DEFAULT 'none',
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(channel_id, twitch_user_id)
+);

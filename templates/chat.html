@@ -7,23 +7,124 @@
 {% block page_content %}
 <div class="chat-layout">
 
+  <!-- =====================================================
+       Main chat panel
+       ===================================================== -->
   <div class="card chat-card">
     <div class="card__header">
-      <h2 class="card__title">Live Chat</h2>
+      <h2 class="card__title">
+        Live Chat
+        <span class="chat-status-pill" id="chatStatusPill">Connecting…</span>
+      </h2>
       <div class="card__actions">
-        <button class="btn btn--secondary btn--sm" id="pauseChat">Pause</button>
-        <button class="btn btn--danger btn--sm" id="clearChat">Clear</button>
+        <button class="btn btn--secondary btn--sm" id="pauseChat" title="Pause scroll">Pause</button>
+        <button class="btn btn--secondary btn--sm" id="exportChat" title="Export to PDF">Export PDF</button>
+        <button class="btn btn--danger btn--sm" id="clearChat" title="Clear chat">Clear</button>
       </div>
     </div>
+
     <div class="card__body chat-body" id="chatMessages">
-      <p class="empty-state">Chat will appear here when you go live.</p>
+      <p class="empty-state" id="chatEmptyState">Connecting to chat…</p>
     </div>
-    <div class="card__footer">
-      <input type="text" class="form-input" id="chatInput" placeholder="Send a message as your bot...">
+
+    <div class="card__footer chat-footer">
+      <input
+        type="text"
+        class="form-input"
+        id="chatInput"
+        placeholder="Send a message to chat…"
+        maxlength="500"
+        autocomplete="off"
+      >
       <button class="btn btn--primary" id="chatSend">Send</button>
     </div>
   </div>
 
+  <!-- =====================================================
+       User card panel — slides in on username click
+       ===================================================== -->
+  <div class="user-card" id="userCard" hidden>
+    <div class="user-card__header">
+      <img class="user-card__avatar" id="ucAvatar" src="" alt="">
+      <div class="user-card__identity">
+        <span class="user-card__display-name" id="ucDisplayName"></span>
+        <span class="user-card__login" id="ucLogin"></span>
+      </div>
+      <button class="user-card__close" id="ucClose" aria-label="Close">✕</button>
+    </div>
+
+    <div class="user-card__meta">
+      <div class="user-card__meta-item">
+        <span class="user-card__meta-label">Account age</span>
+        <span class="user-card__meta-value" id="ucAccountAge"></span>
+      </div>
+      <div class="user-card__meta-item">
+        <span class="user-card__meta-label">Following since</span>
+        <span class="user-card__meta-value" id="ucFollowerSince"></span>
+      </div>
+    </div>
+
+    <!-- Flag selector -->
+    <div class="user-card__flags">
+      <button class="flag-btn" data-flag="none"      title="No flag">—</button>
+      <button class="flag-btn" data-flag="star"      title="Regular / VIP">⭐</button>
+      <button class="flag-btn" data-flag="warning"   title="Watch this user">⚠️</button>
+      <button class="flag-btn" data-flag="ban_watch" title="Ban watch">🚫</button>
+    </div>
+
+    <!-- Profile fields -->
+    <div class="user-card__profile">
+      <label class="form-label" for="ucNickname">Nickname</label>
+      <input type="text" class="form-input form-input--sm" id="ucNickname"
+             placeholder="Optional display name override" maxlength="40">
+
+      <label class="form-label" for="ucNotes">Notes</label>
+      <textarea class="form-input form-input--sm" id="ucNotes" rows="3"
+                placeholder="Regular, known troll, gifted 10 subs…"></textarea>
+
+      <div class="user-card__profile-actions">
+        <button class="btn btn--primary btn--sm" id="ucSave">Save profile</button>
+        <button class="btn btn--ghost btn--sm" id="ucClearProfile">Clear profile</button>
+      </div>
+    </div>
+
+    <!-- Mod actions -->
+    <div class="user-card__mod-actions">
+      <span class="user-card__section-label">Mod actions</span>
+      <div class="user-card__mod-buttons">
+        <button class="btn btn--secondary btn--sm" data-action="timeout" data-duration="60">
+          60s timeout
+        </button>
+        <button class="btn btn--secondary btn--sm" data-action="timeout" data-duration="600">
+          10m timeout
+        </button>
+        <button class="btn btn--danger btn--sm" data-action="ban">
+          Ban
+        </button>
+      </div>
+    </div>
+
+    <!-- Recent messages from this user -->
+    <div class="user-card__history">
+      <span class="user-card__section-label">Recent messages</span>
+      <div class="user-card__history-list" id="ucHistory"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- =====================================================
+     Clear chat confirmation modal
+     ===================================================== -->
+<div class="modal-backdrop" id="clearModal" hidden>
+  <div class="modal">
+    <h3 class="modal__title">Clear chat?</h3>
+    <p class="modal__body">This will clear the chat from your StreamPilot view only. Twitch chat is not affected.</p>
+    <div class="modal__actions">
+      <button class="btn btn--danger" id="clearConfirm">Clear</button>
+      <button class="btn btn--ghost"  id="clearCancel">Cancel</button>
+    </div>
+  </div>
 </div>
 {% endblock %}
 

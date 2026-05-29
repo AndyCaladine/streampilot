@@ -121,8 +121,11 @@ def twitch_auth():
         "client_id":     app.config["TWITCH_CLIENT_ID"],
         "redirect_uri":  app.config["TWITCH_REDIRECT_URI"],
         "response_type": "code",
+        "force_verify":  "true",
         "scope": " ".join([
             "user:read:email",
+            "chat:read",
+            "chat:edit",
             "channel:read:subscriptions",
             "channel:read:goals",
             "channel:read:polls",

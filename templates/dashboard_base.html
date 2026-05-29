@@ -229,14 +229,12 @@
             <span class="stat-pill__label">Uptime</span>
           </div>
         </div>
-          <button class="btn btn--sm btn--secondary" id="simulateBtn" style="margin-left: 8px;">
-            Simulate Live
-        </button>
-
-
       </div>
 
       <div class="topbar__right">
+        <button class="btn btn--sm btn--secondary" id="simulateBtn">
+          Simulate Live
+        </button>
 
         <!-- World clocks -->
         <div class="topbar__clocks" id="topbarClocks">
@@ -385,6 +383,9 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+  window._spDisplayName = "{{ session.get('display_name', '') }}";
+</script>
   <!-- HTMX — intercepts nav clicks, swaps #pageContent without a full reload -->
   <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
   <!-- Socket.IO -->

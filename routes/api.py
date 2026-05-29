@@ -459,3 +459,185 @@ def save_dashboard_layout():
     conn.commit()
     return jsonify({"status": "ok"})
 
+# =============================================================
+# Chat — Twitch user lookup
+# Called when a username is clicked in the chat viewer.
+# Returns real Twitch profile data plus the stored SP profile.
+# =============================================================
+
+@api_bp.route("/chat/user/<twitch_login>")
+@api_login_required
+def chat_user(twitch_login):
+    import requests
+    from flask import current_app
+
+    access_token = session.get("access_token")
+    if not access_token:
+        return jsonify({"error": "No Twitch token"}), 401
+
+    client_id = current_app.config["TWITCH_CLIENT_ID"]
+    headers   = {
+        "Authorization": f"Bearer {access_token}",
+        "Client-Id":     client_id,
+    }
+
+    # --- Twitch user profile ---
+    r = requests.get(
+        "https://api.twitch.tv/helix/users",
+        params={"login": twitch_login},
+        headers=headers,
+    )
+    if not r.ok or not r.json().get("data"):
+        return jsonify({"error": "User not found"}), 404
+
+    twitch_user   = r.json()["data"][0]
+    twitch_user_id = twitch_user["id"]
+
+    # --- Follower status for this channel ---
+    conn = get_db_connection()
+    p    = placeholder()
+
+    platform_row = conn.execute(
+        f"""
+        SELECT up.platform_user_id
+        FROM user_platforms up
+        JOIN channels c ON c.user_id = up.user_id
+        WHERE c.id = {p} AND up.platform = 'twitch'
+        """,
+        (current_channel_id(),)
+    ).fetchone()
+
+    broadcaster_id = platform_row["platform_user_id"] if platform_row else None
+
+    follower_since = None
+    if broadcaster_id:
+        fr = requests.get(
+            "https://api.twitch.tv/helix/channels/followers",
+            params={
+                "broadcaster_id": broadcaster_id,
+                "user_id":        twitch_user_id,
+            },
+            headers=headers,
+        )
+        if fr.ok:
+            fdata = fr.json().get("data", [])
+            if fdata:
+                follower_since = fdata[0].get("followed_at")
+
+    # --- StreamPilot chat profile ---
+    profile = conn.execute(
+        f"""
+        SELECT nickname, notes, flag
+        FROM chat_profiles
+        WHERE channel_id = {p} AND twitch_user_id = {p}
+        """,
+        (current_channel_id(), twitch_user_id)
+    ).fetchone()
+
+    conn.close()
+
+    return jsonify({
+        "twitch": {
+            "id":               twitch_user_id,
+            "login":            twitch_user["login"],
+            "display_name":     twitch_user["display_name"],
+            "avatar_url":       twitch_user.get("profile_image_url"),
+            "account_created":  twitch_user.get("created_at"),
+            "description":      twitch_user.get("description", ""),
+        },
+        "channel": {
+            "follower_since":   follower_since,
+        },
+        "profile": {
+            "nickname": profile["nickname"] if profile else None,
+            "notes":    profile["notes"]    if profile else None,
+            "flag":     profile["flag"]     if profile else "none",
+        },
+    })
+
+
+# =============================================================
+# Chat profiles — save/update
+# Stores per-viewer nickname, notes and flag against channel.
+# =============================================================
+
+@api_bp.route("/chat/profile", methods=["POST"])
+@api_login_required
+def save_chat_profile():
+    from utils.db import get_db_type
+
+    data           = request.get_json()
+    twitch_user_id = (data.get("twitch_user_id") or "").strip()
+    twitch_login   = (data.get("twitch_login")   or "").strip()
+    nickname       = (data.get("nickname")        or "").strip() or None
+    notes          = (data.get("notes")           or "").strip() or None
+    flag           = (data.get("flag")            or "none").strip()
+
+    if not twitch_user_id or not twitch_login:
+        return jsonify({"error": "twitch_user_id and twitch_login are required"}), 400
+
+    allowed_flags = {"none", "star", "warning", "ban_watch"}
+    if flag not in allowed_flags:
+        flag = "none"
+
+    conn = get_db_connection()
+    p    = placeholder()
+
+    if get_db_type() == "postgres":
+        conn.execute(
+            f"""
+            INSERT INTO chat_profiles
+                (channel_id, twitch_user_id, twitch_login, nickname, notes, flag, updated_at)
+            VALUES ({p}, {p}, {p}, {p}, {p}, {p}, CURRENT_TIMESTAMP)
+            ON CONFLICT (channel_id, twitch_user_id)
+            DO UPDATE SET
+                nickname   = {p},
+                notes      = {p},
+                flag       = {p},
+                twitch_login = {p},
+                updated_at = CURRENT_TIMESTAMP
+            """,
+            (
+                current_channel_id(), twitch_user_id, twitch_login,
+                nickname, notes, flag,
+                nickname, notes, flag, twitch_login,
+            )
+        )
+    else:
+        conn.execute(
+            f"""
+            INSERT OR REPLACE INTO chat_profiles
+                (channel_id, twitch_user_id, twitch_login, nickname, notes, flag, updated_at)
+            VALUES ({p}, {p}, {p}, {p}, {p}, {p}, CURRENT_TIMESTAMP)
+            """,
+            (current_channel_id(), twitch_user_id, twitch_login, nickname, notes, flag)
+        )
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"ok": True})
+
+
+# =============================================================
+# Chat profiles — delete
+# Removes all stored notes/nickname/flag for a viewer.
+# =============================================================
+
+@api_bp.route("/chat/profile/<twitch_user_id>", methods=["DELETE"])
+@api_login_required
+def delete_chat_profile(twitch_user_id):
+    conn = get_db_connection()
+    p    = placeholder()
+
+    conn.execute(
+        f"""
+        DELETE FROM chat_profiles
+        WHERE channel_id = {p} AND twitch_user_id = {p}
+        """,
+        (current_channel_id(), twitch_user_id)
+    )
+    conn.commit()
+    conn.close()
+
+    return jsonify({"ok": True})

@@ -368,3 +368,26 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
     expires_at  DATETIME NOT NULL,
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- -------------------------------------------------------------
+-- Chat profiles
+-- Per-viewer notes stored by the streamer/mod team.
+-- Keyed on twitch_user_id so they persist across streams.
+-- One profile per viewer per channel.
+--
+-- nickname:  Optional display name override shown in SP chat
+-- notes:     Free text — "regular", "known troll", etc.
+-- flag:      none | star | warning | ban_watch
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS chat_profiles (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    channel_id      INTEGER NOT NULL REFERENCES channels(id),
+    twitch_user_id  TEXT    NOT NULL,
+    twitch_login    TEXT    NOT NULL,
+    nickname        TEXT,
+    notes           TEXT,
+    flag            TEXT    NOT NULL DEFAULT 'none',
+    created_at      TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(channel_id, twitch_user_id)
+);
