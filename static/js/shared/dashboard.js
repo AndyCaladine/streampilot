@@ -107,14 +107,28 @@ async function loadStreamStats() {
       if (viewers)   setStatValue("statViewers",     stats.viewers     !== null ? formatNumber(stats.viewers)     : "—");
       if (followers) setStatValue("statFollowers",   stats.followers   !== null ? formatNumber(stats.followers)   : "—");
       if (subs)      setStatValue("statSubscribers", stats.subscribers !== null ? formatNumber(stats.subscribers) : "—");
-      if (uptime && stats.live && stats.uptime_seconds !== null) {
-        setStatValue("statUptime", formatUptime(stats.uptime_seconds));
+      if (stats.live && stats.uptime_seconds !== null) {
+        // Sync local uptime counter to Twitch's value on each poll
+        // then let the local tick handle per-second updates
+        if (!uptimeTick) {
+          uptimeSeconds = stats.uptime_seconds;
+          uptimeTick = setInterval(() => {
+            uptimeSeconds++;
+            setStatValue("statUptime", formatUptime(uptimeSeconds));
+          }, 1000);
+        }
+      } else if (!stats.live && uptimeTick && !simulateInterval) {
+        // Stream ended — stop local tick
+        clearInterval(uptimeTick);
+        uptimeTick    = null;
+        uptimeSeconds = 0;
+        setStatValue("statUptime", "—");
       }
     }
 
-    // Poll every 60 seconds
+    // Poll every 10 seconds
     if (!statsInterval) {
-      statsInterval = setInterval(loadStreamStats, 60000);
+      statsInterval = setInterval(loadStreamStats, 10000);
     }
 
   } catch (error) {
