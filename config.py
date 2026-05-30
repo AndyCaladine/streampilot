@@ -20,6 +20,7 @@ class Config:
     # Create an app at https://dev.twitch.tv/console
     TWITCH_CLIENT_ID     = os.environ.get("TWITCH_CLIENT_ID", "")
     TWITCH_CLIENT_SECRET = os.environ.get("TWITCH_CLIENT_SECRET", "")
+    EVENTSUB_SECRET      = os.environ.get("EVENTSUB_SECRET", "")
     TWITCH_REDIRECT_URI  = os.environ.get(
         "TWITCH_REDIRECT_URI",
         "http://localhost:5000/auth/callback"

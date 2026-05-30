@@ -106,7 +106,6 @@ def login():
             flash("Email or password is incorrect.", "error")
             return render_template("login.html")
 
-        # ---- Credentials valid — now send to Twitch OAuth ---
         conn.close()
         session["pending_user_id"] = user["id"]
         return redirect(url_for("twitch_auth"))
@@ -206,6 +205,14 @@ def callback():
             (user_id,)
         )
         conn.commit()
+        conn.close()
+
+        # Register EventSub subscriptions for this broadcaster
+        try:
+            from utils.eventsub import register_subscriptions
+            register_subscriptions(twitch_user["id"])
+        except Exception as e:
+            app.logger.error(f"[EventSub] Registration failed: {e}")
 
     else:
         # ---- New user — link Twitch to the account created on /join
@@ -271,11 +278,21 @@ def callback():
             (user_id, beta_code)
         )
         conn.commit()
+        conn.close()
 
         session.pop("pending_user_id", None)
         session.pop("beta_code", None)
 
+        # Register EventSub subscriptions for this broadcaster
+        try:
+            from utils.eventsub import register_subscriptions
+            register_subscriptions(twitch_user["id"])
+        except Exception as e:
+            app.logger.error(f"[EventSub] Registration failed: {e}")
+
     # ---- Build available accounts for session ---------------
+    conn = get_db_connection()
+
     own_channel = conn.execute(
         f"""
         SELECT c.id as channel_id, up.platform_display_name as display_name,
@@ -343,6 +360,136 @@ def callback():
 
     session["available_accounts"] = available_accounts
     return redirect(url_for("streamer.select_account"))
+
+
+@app.route("/webhooks/twitch", methods=["POST"])
+def twitch_webhook():
+    import hmac
+    import hashlib
+
+    secret    = app.config["EVENTSUB_SECRET"].encode("utf-8")
+    msg_id    = request.headers.get("Twitch-Eventsub-Message-Id", "")
+    timestamp = request.headers.get("Twitch-Eventsub-Message-Timestamp", "")
+    body      = request.get_data()
+
+    # ── Verify signature ─────────────────────────────────────────
+    sig_header = request.headers.get("Twitch-Eventsub-Message-Signature", "")
+    hmac_msg   = (msg_id + timestamp).encode("utf-8") + body
+    expected   = "sha256=" + hmac.new(secret, hmac_msg, hashlib.sha256).hexdigest()
+
+    if not hmac.compare_digest(expected, sig_header):
+        app.logger.warning("[Webhook] Invalid signature")
+        return "Forbidden", 403
+
+    data     = request.get_json()
+    msg_type = request.headers.get("Twitch-Eventsub-Message-Type", "")
+
+    # ── Challenge handshake ───────────────────────────────────────
+    if msg_type == "webhook_callback_verification":
+        return data["challenge"], 200, {"Content-Type": "text/plain"}
+
+    # ── Revocation notice ─────────────────────────────────────────
+    if msg_type == "revocation":
+        app.logger.warning(f"[Webhook] Subscription revoked: {data}")
+        return "", 204
+
+    # ── Live event ────────────────────────────────────────────────
+    if msg_type == "notification":
+        event_type     = data.get("subscription", {}).get("type")
+        event          = data.get("event", {})
+        broadcaster_id = (
+            event.get("broadcaster_user_id") or
+            event.get("to_broadcaster_user_id")
+        )
+
+        payload = build_event_payload(event_type, event)
+
+        if payload and broadcaster_id:
+            socketio.emit("stream_event", payload, room=broadcaster_id)
+
+    return "", 204
+
+
+def build_event_payload(event_type, event):
+    """Normalise a Twitch event into a consistent payload for the frontend."""
+
+    if event_type == "channel.follow":
+        return {
+            "type":  "follow",
+            "icon":  "💜",
+            "title": f"{event.get('user_name')} followed!",
+            "user":  event.get("user_name"),
+            "ts":    event.get("followed_at"),
+        }
+
+    if event_type == "channel.subscribe":
+        tier = {"1000": "Tier 1", "2000": "Tier 2", "3000": "Tier 3"}.get(
+            event.get("tier"), "Tier 1"
+        )
+        return {
+            "type":  "sub",
+            "icon":  "⭐",
+            "title": f"{event.get('user_name')} subscribed! ({tier})",
+            "user":  event.get("user_name"),
+            "tier":  tier,
+            "ts":    None,
+        }
+
+    if event_type == "channel.subscription.message":
+        tier    = {"1000": "Tier 1", "2000": "Tier 2", "3000": "Tier 3"}.get(
+            event.get("tier"), "Tier 1"
+        )
+        months  = event.get("cumulative_months", 1)
+        message = event.get("message", {}).get("text", "")
+        return {
+            "type":    "resub",
+            "icon":    "🔄",
+            "title":   f"{event.get('user_name')} resubbed for {months} months! ({tier})",
+            "user":    event.get("user_name"),
+            "message": message,
+            "months":  months,
+            "ts":      None,
+        }
+
+    if event_type == "channel.subscription.gift":
+        tier  = {"1000": "Tier 1", "2000": "Tier 2", "3000": "Tier 3"}.get(
+            event.get("tier"), "Tier 1"
+        )
+        total = event.get("total", 1)
+        giver = event.get("user_name") or "An anonymous gifter"
+        return {
+            "type":  "gift",
+            "icon":  "🎁",
+            "title": f"{giver} gifted {total} sub{'s' if total > 1 else ''}! ({tier})",
+            "user":  giver,
+            "total": total,
+            "ts":    None,
+        }
+
+    if event_type == "channel.cheer":
+        bits = event.get("bits", 0)
+        return {
+            "type":    "cheer",
+            "icon":    "💎",
+            "title":   f"{event.get('user_name')} cheered {bits} bits!",
+            "user":    event.get("user_name"),
+            "bits":    bits,
+            "message": event.get("message", ""),
+            "ts":      None,
+        }
+
+    if event_type == "channel.raid":
+        viewers = event.get("viewers", 0)
+        return {
+            "type":    "raid",
+            "icon":    "🚀",
+            "title":   f"{event.get('from_broadcaster_user_name')} raided with {viewers} viewers!",
+            "user":    event.get("from_broadcaster_user_name"),
+            "viewers": viewers,
+            "ts":      None,
+        }
+
+    return None
 
 
 @app.route("/logout")
