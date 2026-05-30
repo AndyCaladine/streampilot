@@ -26,6 +26,10 @@ const state = {
   capWarningShown:     false,
   listenersAttached:   false,
   nicknames:           {},  // twitch_login → nickname
+  activeFilter:        "on_deck",  // on_deck | afk | stowaways
+  chatters:            [],         // latest chatter list from API
+  messageCounts:       {},         // login → message count this session
+  manifestInterval:    null,
 };
 
 // =============================================================
@@ -38,6 +42,7 @@ function initChat() {
   restoreFromStorage();
   bindUI();
   connectSocket();
+  startManifest();
 }
 
 
@@ -116,6 +121,10 @@ function appendMessage(msg, save = true) {
 
   if (save) {
     saveMessage(msg);
+    // Track message count per user for manifest ordering
+    if (msg.login) {
+      state.messageCounts[msg.login] = (state.messageCounts[msg.login] || 0) + 1;
+    }
   }
 
   if (!state.paused) {
@@ -375,6 +384,150 @@ function setActiveFlag(flag) {
 function closeUserCard() {
   document.getElementById("userCard").hidden = true;
   state.activeUser = null;
+}
+
+// =============================================================
+// Passenger Manifest
+// =============================================================
+
+async function loadManifest() {
+  try {
+    const res  = await fetch("/api/chat/chatters");
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.warn("[Manifest] Failed to load:", data.error);
+      return;
+    }
+
+    state.chatters = data.chatters || [];
+    renderManifest();
+
+  } catch (err) {
+    console.warn("[Manifest] Error:", err);
+  }
+}
+
+
+function renderManifest() {
+  const list        = document.getElementById("manifestList");
+  const countEl     = document.getElementById("manifestCount");
+  const onDeckCount = document.getElementById("filterCountOnDeck");
+  const afkCount    = document.getElementById("filterCountAfk");
+  const stowawayCount = document.getElementById("filterCountStowaways");
+
+  if (!list) return;
+
+  const now         = Date.now();
+  const thirtyMins  = 30 * 60 * 1000;
+
+  // Categorise chatters
+  const onDeck   = [];
+  const afk      = [];
+  const stowaways = [];
+
+  state.chatters.forEach(chatter => {
+    const count     = state.messageCounts[chatter.login] || 0;
+    const lastMsg   = state.messageLog.filter(m => m.login === chatter.login).pop();
+    const lastMsgAt = lastMsg ? new Date(lastMsg.timestamp).getTime() : 0;
+    const isRecent  = lastMsgAt && (now - lastMsgAt) < thirtyMins;
+
+    chatter._count   = count;
+    chatter._lastMsg = lastMsgAt;
+
+    if (count === 0) {
+      stowaways.push(chatter);
+    } else if (isRecent) {
+      onDeck.push(chatter);
+    } else {
+      afk.push(chatter);
+    }
+  });
+
+  // Sort on deck by message count descending
+  onDeck.sort((a, b) => b._count - a._count);
+  afk.sort((a, b) => b._lastMsg - a._lastMsg);
+
+  // Update counts
+  if (countEl)      countEl.textContent      = state.chatters.length;
+  if (onDeckCount)  onDeckCount.textContent  = onDeck.length;
+  if (afkCount)     afkCount.textContent     = afk.length;
+  if (stowawayCount) stowawayCount.textContent = stowaways.length;
+
+  // Render active filter
+  let toRender = [];
+  if (state.activeFilter === "on_deck")   toRender = onDeck;
+  if (state.activeFilter === "afk")       toRender = afk;
+  if (state.activeFilter === "stowaways") toRender = stowaways;
+
+  if (toRender.length === 0) {
+    const labels = {
+      on_deck:   "No active chatters yet",
+      afk:       "No AFK passengers",
+      stowaways: "No stowaways detected",
+    };
+    list.innerHTML = `<p class="empty-state empty-state--sm">${labels[state.activeFilter]}</p>`;
+    return;
+  }
+
+  list.innerHTML = "";
+  toRender.forEach(chatter => {
+    const row = document.createElement("div");
+    row.className = "manifest-row";
+    row.dataset.login = chatter.login;
+
+    const flagIcons = {
+      star:      "⭐",
+      warning:   "⚠️",
+      ban_watch: "🚫",
+      none:      "",
+    };
+
+    const flag     = flagIcons[chatter.flag] || "";
+    const name     = chatter.nickname
+      ? `${chatter.display_name} <span class="manifest-row__nickname">(${chatter.nickname})</span>`
+      : chatter.display_name;
+    const msgCount = chatter._count > 0
+      ? `<span class="manifest-row__count">${chatter._count}</span>`
+      : "";
+
+    const safeName = chatter.nickname
+      ? `${escHtml(chatter.display_name)} <span class="manifest-row__nickname">(${escHtml(chatter.nickname)})</span>`
+      : escHtml(chatter.display_name);
+
+    row.innerHTML = `
+      <span class="manifest-row__flag">${flag}</span>
+      <span class="manifest-row__name">${safeName}</span>
+      ${msgCount}
+    `;
+
+    row.addEventListener("click", () => {
+      openUserCard({
+        twitch_id:    chatter.user_id,
+        login:        chatter.login,
+        display_name: chatter.display_name,
+        badges:       [],
+        color:        "",
+        role:         "viewer",
+      });
+    });
+
+    list.appendChild(row);
+  });
+}
+
+
+function startManifest() {
+  loadManifest();
+  state.manifestInterval = setInterval(loadManifest, 30000);
+}
+
+
+function stopManifest() {
+  if (state.manifestInterval) {
+    clearInterval(state.manifestInterval);
+    state.manifestInterval = null;
+  }
 }
 
 
@@ -654,6 +807,24 @@ function bindUI() {
 
   // User card — clear profile
   document.getElementById("ucClearProfile").addEventListener("click", clearProfile);
+
+  // Manifest filter buttons
+    document.querySelectorAll(".manifest-filter").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".manifest-filter").forEach(b => {
+          b.classList.remove("manifest-filter--active");
+        });
+        btn.classList.add("manifest-filter--active");
+        state.activeFilter = btn.dataset.filter;
+        renderManifest();
+      });
+    });
+
+    // Manifest refresh
+    const manifestRefresh = document.getElementById("manifestRefresh");
+    if (manifestRefresh) {
+      manifestRefresh.addEventListener("click", loadManifest);
+    }
 
   // User card — mod actions
   document.querySelectorAll("[data-action]").forEach(btn => {

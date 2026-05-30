@@ -133,6 +133,7 @@ def twitch_auth():
             "channel:manage:predictions",
             "channel:manage:raids",
             "moderator:read:followers",
+            "moderator:read:chatters",
             "moderator:manage:chat_messages",
             "moderator:manage:banned_users",
             "bits:read",

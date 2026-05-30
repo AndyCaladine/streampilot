@@ -641,3 +641,107 @@ def delete_chat_profile(twitch_user_id):
     conn.close()
 
     return jsonify({"ok": True})
+
+# =============================================================
+# Passenger Manifest — who's in chat right now
+# Calls Twitch /helix/chat/chatters and enriches with
+# chat profiles (nickname, flag) and message counts from
+# the client-side session log passed in the request.
+# =============================================================
+
+@api_bp.route("/chat/chatters", methods=["GET"])
+@api_login_required
+def get_chatters():
+    import requests
+    from flask import current_app
+
+    access_token = session.get("access_token")
+    if not access_token:
+        return jsonify({"error": "No Twitch token"}), 401
+
+    client_id = current_app.config["TWITCH_CLIENT_ID"]
+    headers   = {
+        "Authorization": f"Bearer {access_token}",
+        "Client-Id":     client_id,
+    }
+
+    conn = get_db_connection()
+    p    = placeholder()
+
+    # Get broadcaster's Twitch ID
+    platform_row = conn.execute(
+        f"""
+        SELECT up.platform_user_id
+        FROM user_platforms up
+        JOIN channels c ON c.user_id = up.user_id
+        WHERE c.id = {p} AND up.platform = 'twitch'
+        """,
+        (current_channel_id(),)
+    ).fetchone()
+
+    if not platform_row:
+        conn.close()
+        return jsonify({"error": "No Twitch platform linked"}), 404
+
+    broadcaster_id = platform_row["platform_user_id"]
+
+    # Fetch chatters from Twitch
+    r = requests.get(
+        "https://api.twitch.tv/helix/chat/chatters",
+        params={
+            "broadcaster_id": broadcaster_id,
+            "moderator_id":   broadcaster_id,
+            "first":          1000,
+        },
+        headers=headers,
+    )
+
+    if not r.ok:
+        conn.close()
+        return jsonify({"error": "Failed to fetch chatters", "detail": r.text}), r.status_code
+
+    chatters = r.json().get("data", [])
+    total    = r.json().get("total", 0)
+
+    if not chatters:
+        conn.close()
+        return jsonify({"chatters": [], "total": 0})
+
+    # Get all chat profiles for this channel in one query
+    logins = [c["user_login"] for c in chatters]
+    profiles = conn.execute(
+        f"""
+        SELECT twitch_login, twitch_user_id, nickname, flag
+        FROM chat_profiles
+        WHERE channel_id = {p}
+        """,
+        (current_channel_id(),)
+    ).fetchall()
+
+    conn.close()
+
+    profile_map = {
+        row["twitch_login"]: {
+            "nickname": row["nickname"],
+            "flag":     row["flag"],
+        }
+        for row in profiles
+    }
+
+    # Build enriched chatter list
+    result = []
+    for chatter in chatters:
+        login   = chatter["user_login"]
+        profile = profile_map.get(login, {})
+        result.append({
+            "user_id":      chatter["user_id"],
+            "login":        login,
+            "display_name": chatter["user_name"],
+            "nickname":     profile.get("nickname"),
+            "flag":         profile.get("flag", "none"),
+        })
+
+    return jsonify({
+        "chatters": result,
+        "total":    total,
+    })

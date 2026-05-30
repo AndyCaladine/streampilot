@@ -7,9 +7,7 @@
 {% block page_content %}
 <div class="chat-layout">
 
-  <!-- =====================================================
-       Main chat panel
-       ===================================================== -->
+  <!-- Chat panel -->
   <div class="card chat-card">
     <div class="card__header">
       <h2 class="card__title">
@@ -22,27 +20,46 @@
         <button class="btn btn--danger btn--sm" id="clearChat" title="Clear chat">Clear</button>
       </div>
     </div>
-
     <div class="card__body chat-body" id="chatMessages">
       <p class="empty-state" id="chatEmptyState">Connecting to chat…</p>
     </div>
-
     <div class="card__footer chat-footer">
-      <input
-        type="text"
-        class="form-input"
-        id="chatInput"
-        placeholder="Send a message to chat…"
-        maxlength="500"
-        autocomplete="off"
-      >
+      <input type="text" class="form-input" id="chatInput"
+             placeholder="Send a message to chat…" maxlength="500" autocomplete="off">
       <button class="btn btn--primary" id="chatSend">Send</button>
     </div>
   </div>
 
-  <!-- =====================================================
-       User card panel — slides in on username click
-       ===================================================== -->
+  <!-- Passenger Manifest -->
+  <div class="manifest-panel" id="manifestPanel">
+    <div class="manifest-panel__header">
+      <div class="manifest-panel__title">
+        <span class="manifest-panel__icon">✈️</span>
+        Passenger Manifest
+        <span class="manifest-count" id="manifestCount">0</span>
+      </div>
+      <button class="manifest-panel__refresh" id="manifestRefresh" title="Refresh">↻</button>
+    </div>
+    <div class="manifest-panel__filters">
+      <button class="manifest-filter manifest-filter--active" data-filter="on_deck">
+        On Deck
+        <span class="manifest-filter__count" id="filterCountOnDeck">0</span>
+      </button>
+      <button class="manifest-filter" data-filter="afk">
+        AFK
+        <span class="manifest-filter__count" id="filterCountAfk">0</span>
+      </button>
+      <button class="manifest-filter" data-filter="stowaways">
+        Stowaways
+        <span class="manifest-filter__count" id="filterCountStowaways">0</span>
+      </button>
+    </div>
+    <div class="manifest-panel__list" id="manifestList">
+      <p class="empty-state empty-state--sm">Loading manifest…</p>
+    </div>
+  </div>
+
+  <!-- User card -->
   <div class="user-card" id="userCard" hidden>
     <div class="user-card__header">
       <img class="user-card__avatar" id="ucAvatar" src="" alt="">
@@ -52,7 +69,6 @@
       </div>
       <button class="user-card__close" id="ucClose" aria-label="Close">✕</button>
     </div>
-
     <div class="user-card__meta">
       <div class="user-card__meta-item">
         <span class="user-card__meta-label">Account age</span>
@@ -63,48 +79,32 @@
         <span class="user-card__meta-value" id="ucFollowerSince"></span>
       </div>
     </div>
-
-    <!-- Flag selector -->
     <div class="user-card__flags">
       <button class="flag-btn" data-flag="none"      title="No flag">—</button>
       <button class="flag-btn" data-flag="star"      title="Regular / VIP">⭐</button>
       <button class="flag-btn" data-flag="warning"   title="Watch this user">⚠️</button>
       <button class="flag-btn" data-flag="ban_watch" title="Ban watch">🚫</button>
     </div>
-
-    <!-- Profile fields -->
     <div class="user-card__profile">
       <label class="form-label" for="ucNickname">Nickname</label>
       <input type="text" class="form-input form-input--sm" id="ucNickname"
              placeholder="Optional display name override" maxlength="40">
-
       <label class="form-label" for="ucNotes">Notes</label>
       <textarea class="form-input form-input--sm" id="ucNotes" rows="3"
                 placeholder="Regular, known troll, gifted 10 subs…"></textarea>
-
       <div class="user-card__profile-actions">
         <button class="btn btn--primary btn--sm" id="ucSave">Save profile</button>
         <button class="btn btn--ghost btn--sm" id="ucClearProfile">Clear profile</button>
       </div>
     </div>
-
-    <!-- Mod actions -->
     <div class="user-card__mod-actions">
       <span class="user-card__section-label">Mod actions</span>
       <div class="user-card__mod-buttons">
-        <button class="btn btn--secondary btn--sm" data-action="timeout" data-duration="60">
-          60s timeout
-        </button>
-        <button class="btn btn--secondary btn--sm" data-action="timeout" data-duration="600">
-          10m timeout
-        </button>
-        <button class="btn btn--danger btn--sm" data-action="ban">
-          Ban
-        </button>
+        <button class="btn btn--secondary btn--sm" data-action="timeout" data-duration="60">60s timeout</button>
+        <button class="btn btn--secondary btn--sm" data-action="timeout" data-duration="600">10m timeout</button>
+        <button class="btn btn--danger btn--sm" data-action="ban">Ban</button>
       </div>
     </div>
-
-    <!-- Recent messages from this user -->
     <div class="user-card__history">
       <span class="user-card__section-label">Recent messages</span>
       <div class="user-card__history-list" id="ucHistory"></div>
@@ -113,9 +113,6 @@
 
 </div>
 
-<!-- =====================================================
-     Clear chat confirmation modal
-     ===================================================== -->
 <div class="modal-backdrop" id="clearModal" hidden>
   <div class="modal">
     <h3 class="modal__title">Clear chat?</h3>
