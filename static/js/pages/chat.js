@@ -145,7 +145,7 @@ function buildMessageEl(msg) {
   time.textContent = formatTime(msg.timestamp);
 
   // Badges
-  const badgeEl = buildBadges(msg.badges || []);
+  const badgeEl = buildBadges(msg.badges || [], msg.badge_urls || {});
 
   // Username — clickable
   const nameEl = document.createElement("button");
@@ -170,31 +170,43 @@ function buildMessageEl(msg) {
   body.className = "chat-message__body";
   body.textContent = msg.message;  // Plain text — safe, no innerHTML
 
-  row.append(time, badgeEl, nameEl, sep, body);
+  // Platform icon
+  const platform = document.createElement("span");
+  platform.className = "chat-message__platform";
+  platform.title     = "Twitch";
+  platform.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" fill="#9146ff"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>`;
+
+  row.append(time, platform, badgeEl, nameEl, sep, body);
   return row;
 }
 
 
-function buildBadges(badges) {
+function buildBadges(badges, badgeUrls = {}) {
   const wrap = document.createElement("span");
   wrap.className = "chat-message__badges";
-
-  const icons = {
+  const fallbacks = {
     broadcaster: { label: "Broadcaster", icon: "🔴" },
     moderator:   { label: "Mod",         icon: "🗡️" },
     vip:         { label: "VIP",         icon: "💎" },
     subscriber:  { label: "Sub",         icon: "⭐" },
   };
-
   badges.forEach(badge => {
-    if (!icons[badge]) return;
-    const b = document.createElement("span");
-    b.className   = "chat-badge";
-    b.title       = icons[badge].label;
-    b.textContent = icons[badge].icon;
-    wrap.appendChild(b);
+    const url = badgeUrls[badge];
+    if (url) {
+      const img = document.createElement("img");
+      img.className = "chat-badge chat-badge--img";
+      img.src       = url;
+      img.alt       = fallbacks[badge]?.label || badge;
+      img.title     = fallbacks[badge]?.label || badge;
+      wrap.appendChild(img);
+    } else if (fallbacks[badge]) {
+      const b = document.createElement("span");
+      b.className   = "chat-badge";
+      b.title       = fallbacks[badge].label;
+      b.textContent = fallbacks[badge].icon;
+      wrap.appendChild(b);
+    }
   });
-
   return wrap;
 }
 
@@ -289,6 +301,8 @@ async function openUserCard(msg) {
   document.getElementById("ucDisplayName").textContent = msg.display_name || msg.login;
   document.getElementById("ucLogin").textContent       = `@${msg.login}`;
   document.getElementById("ucAvatar").src              = "";
+  document.getElementById("ucViewProfile").href        = `https://twitch.tv/${msg.login}`;
+  document.getElementById("ucShoutout").dataset.login  = msg.login;
   document.getElementById("ucAccountAge").textContent  = "Loading…";
   document.getElementById("ucFollowerSince").textContent = "Loading…";
   document.getElementById("ucNickname").value          = "";
@@ -805,6 +819,33 @@ function bindUI() {
   // User card — save profile
   document.getElementById("ucSave").addEventListener("click", saveProfile);
 
+  document.getElementById("ucShoutout").addEventListener("click", async () => {
+    const login = document.getElementById("ucShoutout").dataset.login;
+    if (!login) return;
+    let message;
+    try {
+      const prefs = await apiRequest("/api/preferences");
+      const template = prefs["shoutout_message"] ||
+        "Go check out {username} over at twitch.tv/{username} — give them a follow!";
+      message = template.replace(/\{username\}/g, login);
+    } catch (e) {
+      message = `Go check out ${login} over at twitch.tv/${login} — give them a follow!`;
+    }
+    state.socket.emit("send_chat_message", { message });
+    showToast(`Shoutout sent for ${login}!`, "success");
+
+    // Mirror to SP chat view
+    appendMessage({
+      login:        (window._spDisplayName || "me").toLowerCase(),
+      display_name: window._spDisplayName || "me",
+      message:      message,
+      color:        "#9146ff",
+      badges:       ["broadcaster"],
+      badge_urls:   {},
+      role:         "broadcaster",
+      ts:           Date.now(),
+    }, false);
+  });
   // User card — clear profile
   document.getElementById("ucClearProfile").addEventListener("click", clearProfile);
 

@@ -116,3 +116,19 @@
   </div>
 
 </div>
+<div class="card">
+    <div class="card__header">
+      <h2 class="card__title">Chat <span class="card__title-accent">Settings</span></h2>
+    </div>
+    <div class="card__body">
+      <div class="form-group">
+        <label class="form-label" for="shoutoutMessage">Shoutout Message</label>
+        <textarea class="form-input" id="shoutoutMessage" rows="3"
+                  placeholder="Go check out {username} over at twitch.tv/{username} — give them a follow!"
+                  maxlength="500"></textarea>
+        <span class="form-hint">Use <code>{username}</code> to insert the viewer's Twitch name.</span>
+      </div>
+      <button class="btn btn--primary btn--sm mt-8" id="saveShoutoutMessage">Save</button>
+    </div>
+  </div>
+</div>

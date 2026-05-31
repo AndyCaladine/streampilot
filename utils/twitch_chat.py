@@ -110,12 +110,15 @@ class TwitchIRCRelay:
     TWITCH_IRC_PORT = 6667
 
     def __init__(self, channel_id: int, channel_login: str,
-                 access_token: str, bot_login: str, socketio):
+                 access_token: str, bot_login: str, socketio,
+                 broadcaster_id: str = ""):
         self.channel_id = channel_id
         self.channel_login = channel_login.lower().lstrip("#")
         self.access_token = access_token
         self.bot_login = bot_login.lower()
         self.socketio = socketio
+        self.broadcaster_id = broadcaster_id
+        self.badge_urls = {}
         self._socket = None
         self._thread = None
         self._running = False
@@ -182,6 +185,13 @@ class TwitchIRCRelay:
             return
 
         self._emit_status("connected")
+        # Fetch and cache badge URLs for this channel
+        try:
+            from utils.twitch import get_badge_urls
+            self.badge_urls = get_badge_urls(self.access_token, self.broadcaster_id)
+            logger.info(f"[IRC] Loaded {len(self.badge_urls)} badge URLs for #{self.channel_login}")
+        except Exception as e:
+            logger.warning(f"[IRC] Could not fetch badge URLs: {e}")
         buffer = ""
 
         while self._running:
@@ -226,6 +236,11 @@ class TwitchIRCRelay:
         # Parse and emit chat messages
         msg = _parse_irc_message(line)
         if msg:
+            msg["badge_urls"] = {
+                badge: self.badge_urls.get(badge)
+                for badge in msg.get("badges", [])
+                if self.badge_urls.get(badge)
+            }
             self.socketio.emit(
                 "chat_message",
                 msg,
@@ -261,7 +276,8 @@ class TwitchIRCRelay:
 # =============================================================
 
 def start_relay(channel_id: int, channel_login: str,
-                access_token: str, bot_login: str, socketio) -> bool:
+                access_token: str, bot_login: str, socketio,
+                broadcaster_id: str = "") -> bool:
     """
     Start an IRC relay for a channel if one isn't already running.
     Returns True if started or already running.
@@ -271,7 +287,8 @@ def start_relay(channel_id: int, channel_login: str,
             return True  # Already connected
 
         relay = TwitchIRCRelay(
-            channel_id, channel_login, access_token, bot_login, socketio
+            channel_id, channel_login, access_token, bot_login, socketio,
+            broadcaster_id=broadcaster_id
         )
         relay.start()
         _connections[channel_id] = relay

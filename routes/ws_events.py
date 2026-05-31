@@ -156,7 +156,7 @@ def handle_start_chat():
 
     row = conn.execute(
         f"""
-        SELECT up.platform_login
+        SELECT up.platform_login, up.platform_user_id
         FROM user_platforms up
         JOIN channels c ON c.user_id = up.user_id
         WHERE c.id = {p} AND up.platform = 'twitch'
@@ -169,14 +169,15 @@ def handle_start_chat():
         emit("chat_status", {"status": "error", "error": "No Twitch account linked"})
         return
 
-    channel_login = row["platform_login"]
-
+    channel_login  = row["platform_login"]
+    broadcaster_id = row["platform_user_id"]
     start_relay(
-        channel_id    = channel_id,
-        channel_login = channel_login,
-        access_token  = access_token,
-        bot_login     = channel_login,  # Posts as the streamer's own account
-        socketio      = socketio,
+        channel_id     = channel_id,
+        channel_login  = channel_login,
+        broadcaster_id = broadcaster_id,
+        access_token   = access_token,
+        bot_login      = channel_login,
+        socketio       = socketio,
     )
 
 

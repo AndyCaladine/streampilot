@@ -174,3 +174,48 @@ def get_subscribers(broadcaster_id, access_token):
         headers=_auth_headers(access_token)
     )
     return response.json().get("total") if response.ok else None
+
+def get_badge_urls(access_token: str, broadcaster_id: str) -> dict:
+    """
+    Fetch global and channel-specific Twitch badge image URLs.
+    Returns a dict keyed by badge set name, value is the image URL
+    for the first version (version "1" or "0").
+    e.g. { "broadcaster": "https://...", "moderator": "https://...", ... }
+    """
+    import os
+    client_id = os.environ.get("TWITCH_CLIENT_ID", "")
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Client-Id": client_id,
+    }
+    badge_map = {}
+
+    # Global badges
+    try:
+        r = requests.get(
+            "https://api.twitch.tv/helix/chat/badges/global",
+            headers=headers, timeout=5
+        )
+        if r.ok:
+            for item in r.json().get("data", []):
+                versions = item.get("versions", [])
+                if versions:
+                    badge_map[item["set_id"]] = versions[0]["image_url_1x"]
+    except Exception as e:
+        logger.warning(f"[Twitch] Could not fetch global badges: {e}")
+
+    # Channel badges (override globals where applicable)
+    try:
+        r = requests.get(
+            f"https://api.twitch.tv/helix/chat/badges?broadcaster_id={broadcaster_id}",
+            headers=headers, timeout=5
+        )
+        if r.ok:
+            for item in r.json().get("data", []):
+                versions = item.get("versions", [])
+                if versions:
+                    badge_map[item["set_id"]] = versions[0]["image_url_1x"]
+    except Exception as e:
+        logger.warning(f"[Twitch] Could not fetch channel badges: {e}")
+
+    return badge_map

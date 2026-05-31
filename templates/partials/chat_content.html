@@ -86,7 +86,7 @@
       </div>
     </div><!-- /manifest-panel -->
 
-    <!-- User card — slides over manifest on username click -->
+    <!-- User card — floats over content on username click -->
     <div class="user-card" id="userCard" hidden>
       <div class="user-card__header">
         <img class="user-card__avatar" id="ucAvatar" src="" alt="">
@@ -107,10 +107,21 @@
         </div>
       </div>
       <div class="user-card__flags">
-        <button class="flag-btn" data-flag="none"      title="No flag">—</button>
-        <button class="flag-btn" data-flag="star"      title="Regular / VIP">⭐</button>
-        <button class="flag-btn" data-flag="warning"   title="Watch this user">⚠️</button>
-        <button class="flag-btn" data-flag="ban_watch" title="Ban watch">🚫</button>
+        <span class="user-card__section-label">Viewer Flag</span>
+        <div class="user-card__flag-buttons">
+          <button class="flag-btn" data-flag="none"      title="No flag">—</button>
+          <button class="flag-btn" data-flag="star"      title="Regular / VIP">⭐</button>
+          <button class="flag-btn" data-flag="warning"   title="Watch this user">⚠️</button>
+          <button class="flag-btn" data-flag="ban_watch" title="Ban watch">🚫</button>
+        </div>
+      </div>
+      <div class="user-card__quick-actions">
+        <a class="btn btn--secondary btn--sm" id="ucViewProfile"
+           href="#" target="_blank" rel="noopener noreferrer"
+           hx-boost="false">
+          View Twitch Profile
+        </a>
+        <button class="btn btn--secondary btn--sm" id="ucShoutout">Send Shoutout ⚡</button>
       </div>
       <div class="user-card__profile">
         <label class="form-label" for="ucNickname">Nickname</label>

@@ -4,6 +4,7 @@
 
 async function initSettings() {
   if (!document.getElementById("connectionStatus")) return;
+  initShoutoutMessage();
 
   await loadOverlayStatus();
 
@@ -202,4 +203,38 @@ function selectTimezone(tz) {
   document.getElementById("tzModal")?.remove();
   renderWorldClocksList();
   showToast("World clock added.", "success");
+}
+
+// =============================================================
+// Shoutout message setting
+// =============================================================
+
+async function initShoutoutMessage() {
+  const textarea = document.getElementById("shoutoutMessage");
+  const saveBtn  = document.getElementById("saveShoutoutMessage");
+  if (!textarea || !saveBtn) return;
+
+  // Load existing value
+  try {
+    const prefs = await apiRequest("/api/preferences");
+    if (prefs["shoutout_message"]) {
+      textarea.value = prefs["shoutout_message"];
+    }
+  } catch (e) {
+    console.warn("[Settings] Could not load shoutout message:", e.message);
+  }
+
+  // Save on button click
+  saveBtn.addEventListener("click", async () => {
+    const value = textarea.value.trim();
+    try {
+      await apiRequest("/api/preferences", "POST", {
+        preference: "shoutout_message",
+        value: value || ""
+      });
+      showToast("Shoutout message saved.", "success");
+    } catch (e) {
+      showToast("Could not save shoutout message.", "error");
+    }
+  });
 }
