@@ -15,6 +15,23 @@ logger = logging.getLogger(__name__)
 DYNAMIC_VARS = ["{game}", "{uptime}", "{viewers}", "{channel}", "{followers}"]
 
 
+class _PgConn:
+    """Minimal wrapper so psycopg2 behaves like sqlite3 for our purposes."""
+    def __init__(self, conn):
+        self._conn = conn
+
+    def execute(self, sql, params=None):
+        cur = self._conn.cursor()
+        cur.execute(sql, params or ())
+        return cur
+
+    def commit(self):
+        self._conn.commit()
+
+    def close(self):
+        self._conn.close()
+
+
 def _get_direct_connection():
     """
     Open a direct DB connection outside Flask request context.
@@ -22,12 +39,12 @@ def _get_direct_connection():
     """
     database_url = os.environ.get("DATABASE_URL", "")
     if database_url and database_url.startswith("postgres"):
-        conn = psycopg2.connect(
+        raw = psycopg2.connect(
             database_url,
             cursor_factory=psycopg2.extras.RealDictCursor
         )
-        conn.autocommit = False
-        return conn, "%s", "postgres"
+        raw.autocommit = False
+        return _PgConn(raw), "%s", "postgres"
     else:
         db_path = database_url if database_url else os.path.join(
             os.path.dirname(os.path.dirname(__file__)), "instance", "database.db"
@@ -113,6 +130,7 @@ def handle_command(channel_id: int, channel_login: str,
 
     # Mod-only check
     if cmd["mod_only"] and not is_mod:
+        logger.debug(f"[COMMANDS] {username} tried mod-only command {trigger}")
         conn.close()
         return
 
@@ -124,6 +142,7 @@ def handle_command(channel_id: int, channel_login: str,
                 last = last.replace(tzinfo=timezone.utc)
             elapsed = (datetime.now(timezone.utc) - last).total_seconds()
             if elapsed < cmd["cooldown_s"]:
+                logger.debug(f"[COMMANDS] {trigger} on cooldown ({elapsed:.0f}s/{cmd['cooldown_s']}s)")
                 conn.close()
                 return
         except Exception as e:
