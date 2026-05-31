@@ -2,33 +2,73 @@
    commands.js — commands management page
    ============================================================= */
 
+let editingId  = null;
+let deletingId = null;
+
 async function initCommands() {
   if (!document.getElementById("commandsList")) return;
 
   await loadCommands();
-
-  document.getElementById("newCommandBtn")
-    ?.addEventListener("click", () => {
-      document.getElementById("newCommandForm").style.display = "block";
-      document.getElementById("commandTrigger").focus();
-    });
-
-  document.getElementById("cancelNewCommand")
-    ?.addEventListener("click", () => {
-      document.getElementById("newCommandForm").style.display = "none";
-      clearNewCommandForm();
-    });
-
-  document.getElementById("saveNewCommand")
-    ?.addEventListener("click", saveCommand);
-
-  document.getElementById("exportCommandsBtn")
-    ?.addEventListener("click", exportCommandsCSV);
+  bindCommandEvents();
 }
 
 document.addEventListener("DOMContentLoaded", initCommands);
 document.addEventListener("htmx:afterSwap",   initCommands);
 
+
+// =============================================================
+// Event bindings
+// =============================================================
+
+function bindCommandEvents() {
+  // New command button — opens modal in create mode
+  document.getElementById("newCommandBtn")
+    ?.addEventListener("click", () => openCommandModal());
+
+  // Modal save
+  document.getElementById("commandSaveBtn")
+    ?.addEventListener("click", saveCommand);
+
+  // Modal cancel
+  document.getElementById("commandCancelBtn")
+    ?.addEventListener("click", closeCommandModal);
+
+  // Close modal on backdrop click
+  document.getElementById("commandModal")
+    ?.addEventListener("click", e => {
+      if (e.target === e.currentTarget) closeCommandModal();
+    });
+
+  // Delete confirm / cancel
+  document.getElementById("deleteConfirmBtn")
+    ?.addEventListener("click", confirmDelete);
+  document.getElementById("deleteCancelBtn")
+    ?.addEventListener("click", closeDeleteModal);
+  document.getElementById("deleteModal")
+    ?.addEventListener("click", e => {
+      if (e.target === e.currentTarget) closeDeleteModal();
+    });
+
+  // Delegated edit / delete / toggle on list
+  document.getElementById("commandsList")
+    ?.addEventListener("click", e => {
+      const editBtn   = e.target.closest(".cmd-edit");
+      const deleteBtn = e.target.closest(".cmd-delete");
+      if (editBtn)   openCommandModal(editBtn.dataset.id);
+      if (deleteBtn) openDeleteModal(deleteBtn.dataset.id, deleteBtn.dataset.trigger);
+    });
+
+  document.getElementById("commandsList")
+    ?.addEventListener("change", e => {
+      const toggle = e.target.closest(".cmd-toggle");
+      if (toggle) toggleCommand(parseInt(toggle.dataset.id), toggle.checked);
+    });
+}
+
+
+// =============================================================
+// Load and render
+// =============================================================
 
 async function loadCommands() {
   try {
@@ -45,28 +85,42 @@ async function loadCommands() {
       return;
     }
 
-    listEl.innerHTML = commands.map(command => `
-      <div class="command-item" data-id="${command.id}">
-        <span class="command-item__trigger">!${command.trigger}</span>
-        <span class="command-item__response">${command.response}</span>
-        <div class="command-item__actions">
-          <label class="toggle" title="${command.enabled ? "Enabled" : "Disabled"}">
-            <input type="checkbox"
-                   ${command.enabled ? "checked" : ""}
-                   onchange="toggleCommand(${command.id}, this.checked)">
-            <span class="toggle-slider"></span>
-          </label>
-          <button class="btn btn--ghost btn--sm btn--icon"
-                  onclick="deleteCommand(${command.id})"
-                  title="Delete command">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" width="14" height="14">
-              <polyline points="3 6 5 6 21 6"/>
-              <path d="M19 6l-1 14H6L5 6"/>
-              <path d="M10 11v6M14 11v6"/>
-              <path d="M9 6V4h6v2"/>
+    listEl.innerHTML = commands.map(cmd => `
+      <div class="command-row" data-id="${cmd.id}"
+           data-trigger="${escapeHtml(cmd.trigger)}"
+           data-response="${escapeHtml(cmd.response)}"
+           data-cooldown="${cmd.cooldown_s}"
+           data-mod-only="${cmd.mod_only}"
+           data-enabled="${cmd.enabled}">
+        <div class="command-row__trigger">
+          <code class="command-trigger">${escapeHtml(cmd.trigger)}</code>
+          ${cmd.mod_only ? '<span class="badge badge--mod">Mod only</span>' : ''}
+        </div>
+        <div class="command-row__response">${escapeHtml(cmd.response)}</div>
+        <div class="command-row__meta">
+          <span class="command-meta-item" title="Cooldown">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
             </svg>
-          </button>
+            ${cmd.cooldown_s}s
+          </span>
+          <span class="command-meta-item" title="Total uses">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            ${cmd.use_count}
+          </span>
+        </div>
+        <div class="command-row__actions">
+          <label class="toggle" title="${cmd.enabled ? 'Enabled' : 'Disabled'}">
+            <input type="checkbox" class="toggle__input cmd-toggle"
+                   data-id="${cmd.id}" ${cmd.enabled ? 'checked' : ''}>
+            <span class="toggle__slider"></span>
+          </label>
+          <button class="btn btn--secondary btn--sm cmd-edit" data-id="${cmd.id}">Edit</button>
+          <button class="btn btn--danger btn--sm cmd-delete"
+                  data-id="${cmd.id}"
+                  data-trigger="${escapeHtml(cmd.trigger)}">Delete</button>
         </div>
       </div>
     `).join("");
@@ -78,55 +132,125 @@ async function loadCommands() {
 }
 
 
+// =============================================================
+// Modal — create / edit
+// =============================================================
+
+function openCommandModal(id = null) {
+  editingId = id;
+  const title = document.getElementById("commandModalTitle");
+
+  // Reset form
+  document.getElementById("cmdTrigger").value    = "";
+  document.getElementById("cmdResponse").value   = "";
+  document.getElementById("cmdCooldown").value   = 30;
+  document.getElementById("cmdModOnly").checked  = false;
+  document.getElementById("cmdEnabled").checked  = true;
+
+  if (id) {
+    title.textContent = "Edit Command";
+    const row = document.querySelector(`.command-row[data-id="${id}"]`);
+    if (row) {
+      document.getElementById("cmdTrigger").value   = row.dataset.trigger;
+      document.getElementById("cmdResponse").value  = row.dataset.response;
+      document.getElementById("cmdCooldown").value  = row.dataset.cooldown;
+      document.getElementById("cmdModOnly").checked = row.dataset.modOnly === "1";
+      document.getElementById("cmdEnabled").checked = row.dataset.enabled === "1";
+    }
+  } else {
+    title.textContent = "New Command";
+  }
+
+  document.getElementById("commandModal").hidden = false;
+  document.getElementById("cmdTrigger").focus();
+}
+
+function closeCommandModal() {
+  document.getElementById("commandModal").hidden = true;
+  editingId = null;
+}
+
+
+// =============================================================
+// Save (create or update)
+// =============================================================
+
 async function saveCommand() {
-  const trigger  = document.getElementById("commandTrigger").value.trim();
-  const response = document.getElementById("commandResponse").value.trim();
-  const cooldown = parseInt(document.getElementById("commandCooldown").value) || 30;
+  const trigger    = document.getElementById("cmdTrigger").value.trim();
+  const response   = document.getElementById("cmdResponse").value.trim();
+  const cooldown_s = parseInt(document.getElementById("cmdCooldown").value) || 30;
+  const mod_only   = document.getElementById("cmdModOnly").checked ? 1 : 0;
+  const enabled    = document.getElementById("cmdEnabled").checked ? 1 : 0;
 
   if (!trigger || !response) {
     showToast("Please enter a trigger and response.", "warn");
     return;
   }
 
+  const payload = { trigger, response, cooldown_s, mod_only, enabled };
+
   try {
-    await apiRequest("/api/commands", "POST", { trigger, response, cooldown_s: cooldown });
-    showToast(`Command !${trigger} created.`, "success");
-    document.getElementById("newCommandForm").style.display = "none";
-    clearNewCommandForm();
+    if (editingId) {
+      await apiRequest(`/api/commands/${editingId}`, "PUT", payload);
+      showToast("Command updated.", "success");
+    } else {
+      await apiRequest("/api/commands", "POST", payload);
+      showToast(`Command ${trigger} created.`, "success");
+    }
+    closeCommandModal();
     await loadCommands();
   } catch (error) {
-    showToast(error.message, "error");
+    showToast(error.message || "Could not save command.", "error");
   }
 }
 
+
+// =============================================================
+// Toggle enabled
+// =============================================================
 
 async function toggleCommand(commandId, enabled) {
   try {
     await apiRequest(`/api/commands/${commandId}`, "PUT", { enabled: enabled ? 1 : 0 });
+    showToast(enabled ? "Command enabled." : "Command disabled.", "success");
   } catch (error) {
     showToast("Could not update command.", "error");
+    await loadCommands(); // Revert UI
   }
 }
 
 
-async function deleteCommand(commandId) {
-  if (!confirm("Delete this command?")) return;
+// =============================================================
+// Delete modal
+// =============================================================
+
+function openDeleteModal(id, trigger) {
+  deletingId = id;
+  document.getElementById("deleteTriggerName").textContent = trigger;
+  document.getElementById("deleteModal").hidden = false;
+}
+
+function closeDeleteModal() {
+  document.getElementById("deleteModal").hidden = true;
+  deletingId = null;
+}
+
+async function confirmDelete() {
+  if (!deletingId) return;
   try {
-    await apiRequest(`/api/commands/${commandId}`, "DELETE");
+    await apiRequest(`/api/commands/${deletingId}`, "DELETE");
     showToast("Command deleted.", "success");
+    closeDeleteModal();
     await loadCommands();
   } catch (error) {
-    showToast(error.message, "error");
+    showToast(error.message || "Could not delete command.", "error");
   }
 }
 
 
-function clearNewCommandForm() {
-  document.getElementById("commandTrigger").value  = "";
-  document.getElementById("commandResponse").value = "";
-  document.getElementById("commandCooldown").value = "30";
-}
-
+// =============================================================
+// CSV export
+// =============================================================
 
 async function exportCommandsCSV() {
   try {
@@ -136,12 +260,14 @@ async function exportCommandsCSV() {
       return;
     }
 
-    const header = ["Trigger", "Response", "Cooldown (s)", "Enabled"];
-    const rows   = commands.map(command => [
-      `!${command.trigger}`,
-      `"${command.response.replace(/"/g, '""')}"`,
-      command.cooldown_s,
-      command.enabled ? "Yes" : "No",
+    const header = ["Trigger", "Response", "Cooldown (s)", "Mod Only", "Enabled", "Uses"];
+    const rows   = commands.map(cmd => [
+      cmd.trigger,
+      `"${cmd.response.replace(/"/g, '""')}"`,
+      cmd.cooldown_s,
+      cmd.mod_only  ? "Yes" : "No",
+      cmd.enabled   ? "Yes" : "No",
+      cmd.use_count
     ]);
 
     const csv  = [header, ...rows].map(row => row.join(",")).join("\n");
@@ -152,10 +278,22 @@ async function exportCommandsCSV() {
     link.href     = url;
     link.download = "streampilot-commands.csv";
     link.click();
-
     URL.revokeObjectURL(url);
     showToast("Commands exported.", "success");
   } catch (error) {
     showToast("Could not export commands.", "error");
   }
+}
+
+
+// =============================================================
+// Helpers
+// =============================================================
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }

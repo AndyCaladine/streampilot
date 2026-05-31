@@ -109,18 +109,20 @@ CREATE TABLE overlay_tokens (
     UNIQUE(channel_id, overlay_type)
 );
 
-CREATE TABLE commands (
+CREATE TABLE IF NOT EXISTS commands (
     id          SERIAL PRIMARY KEY,
     channel_id  INTEGER NOT NULL REFERENCES channels(id),
     trigger     TEXT    NOT NULL,
     response    TEXT    NOT NULL,
     enabled     INTEGER NOT NULL DEFAULT 1,
+    mod_only    INTEGER NOT NULL DEFAULT 0,
     cooldown_s  INTEGER NOT NULL DEFAULT 30,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    use_count   INTEGER NOT NULL DEFAULT 0,
+    last_used_at TIMESTAMPTZ,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     deleted_at  TIMESTAMPTZ,
     UNIQUE(channel_id, trigger)
-);
 
 CREATE TABLE alert_configs (
     id            SERIAL PRIMARY KEY,

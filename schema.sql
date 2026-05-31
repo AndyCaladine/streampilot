@@ -168,13 +168,15 @@ CREATE TABLE IF NOT EXISTS commands (
     trigger     TEXT    NOT NULL,
     response    TEXT    NOT NULL,
     enabled     INTEGER NOT NULL DEFAULT 1,
+    mod_only    INTEGER NOT NULL DEFAULT 0,
     cooldown_s  INTEGER NOT NULL DEFAULT 30,
+    use_count   INTEGER NOT NULL DEFAULT 0,
+    last_used_at TEXT,
     created_at  TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at  TEXT,
     UNIQUE(channel_id, trigger)
 );
-
 
 -- -------------------------------------------------------------
 -- Alert configs

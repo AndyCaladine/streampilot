@@ -20,10 +20,75 @@
 
 <div class="card">
   <div class="card__header">
-    <h2 class="card__title">Your Commands</h2>
+    <h2 class="card__title">Your <span class="card__title-accent">Commands</span></h2>
     <span class="card__badge" id="commandCount">0</span>
   </div>
   <div class="card__body" id="commandsList">
-    <p class="empty-state">No commands yet. Create your first one above.</p>
+    <p class="empty-state" id="commandsEmpty">No commands yet. Create your first one above.</p>
+  </div>
+</div>
+
+<!-- New / Edit Command Modal -->
+<div class="modal-backdrop" id="commandModal" hidden>
+  <div class="modal modal--lg">
+    <h3 class="modal__title" id="commandModalTitle">New Command</h3>
+
+    <div class="form-group">
+      <label class="form-label" for="cmdTrigger">Trigger</label>
+      <input type="text" class="form-input" id="cmdTrigger"
+             placeholder="!socials" maxlength="50" autocomplete="off">
+      <span class="form-hint">The ! is added automatically if you leave it out.</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="cmdResponse">Response</label>
+      <textarea class="form-input" id="cmdResponse" rows="3"
+                placeholder="Follow me on socials at twitch.tv/{channel}"
+                maxlength="500"></textarea>
+      <span class="form-hint">
+        Dynamic variables:
+        <code>{channel}</code> <code>{game}</code> <code>{uptime}</code> <code>{viewers}</code>
+      </span>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group form-group--half">
+        <label class="form-label" for="cmdCooldown">Cooldown (seconds)</label>
+        <input type="number" class="form-input" id="cmdCooldown"
+               value="30" min="0" max="86400">
+      </div>
+      <div class="form-group form-group--half">
+        <label class="form-label">Options</label>
+        <div class="form-checks">
+          <label class="form-check">
+            <input type="checkbox" id="cmdModOnly">
+            <span>Mod only</span>
+          </label>
+          <label class="form-check">
+            <input type="checkbox" id="cmdEnabled" checked>
+            <span>Enabled</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal__actions">
+      <button class="btn btn--primary" id="commandSaveBtn">Save Command</button>
+      <button class="btn btn--ghost" id="commandCancelBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-backdrop" id="deleteModal" hidden>
+  <div class="modal">
+    <h3 class="modal__title">Delete command?</h3>
+    <p class="modal__body">
+      <strong id="deleteTriggerName"></strong> will be removed. This cannot be undone.
+    </p>
+    <div class="modal__actions">
+      <button class="btn btn--danger" id="deleteConfirmBtn">Delete</button>
+      <button class="btn btn--ghost" id="deleteCancelBtn">Cancel</button>
+    </div>
   </div>
 </div>

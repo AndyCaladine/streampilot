@@ -231,6 +231,21 @@ class TwitchIRCRelay:
                 msg,
                 room=f"channel_{self.channel_id}"
             )
+            # Dispatch to command handler if message starts with !
+            if msg.get("message", "").startswith("!"):
+                try:
+                    from utils.commands_handler import handle_command
+                    handle_command(
+                        channel_id=self.channel_id,
+                        channel_login=self.channel_login,
+                        access_token=self.access_token,
+                        username=msg.get("username", ""),
+                        is_mod=msg.get("is_mod", False),
+                        message=msg.get("message", ""),
+                        socketio=self.socketio
+                    )
+                except Exception as e:
+                    logger.warning(f"[COMMANDS] Handler error: {e}")
 
     def _emit_status(self, status: str, error: str = ""):
         """Emit connection status to the channel room."""

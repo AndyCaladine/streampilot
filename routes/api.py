@@ -48,7 +48,7 @@ def get_commands():
 @api_login_required
 def create_command():
     data = request.get_json()
-    trigger = data.get("trigger", "").strip().lstrip("!")
+    trigger = data.get("trigger", "").strip().lstrip("!").lower()    
     response = data.get("response", "").strip()
     cooldown = data.get("cooldown_s", 30)
 
@@ -70,12 +70,14 @@ def create_command():
         conn.close()
         return jsonify({"error": "A command with that trigger already exists."}), 409
     
+    mod_only = 1 if data.get("mod_only") else 0
+
     cur = conn.execute(
         f"""
-        INSERT INTO commands (channel_id, trigger, response, cooldown_s)
-        VALUES ({p}, {p}, {p}, {p})
+        INSERT INTO commands (channel_id, trigger, response, cooldown_s, mod_only)
+        VALUES ({p}, {p}, {p}, {p}, {p})
         """,
-        (current_channel_id(), trigger, response, cooldown)
+        (current_channel_id(), trigger, response, cooldown, mod_only)
     )
 
     conn.commit()
@@ -113,6 +115,7 @@ def update_command(command_id):
             response = COALESCE({p}, response),
             enabled = COALESCE({p}, enabled),
             cooldown_s = COALESCE({p}, cooldown_s),
+            mod_only = COALESCE({p}, mod_only),
             updated_at = CURRENT_TIMESTAMP
         WHERE id = {p}
         """,
@@ -120,6 +123,7 @@ def update_command(command_id):
             data.get("response"),
             data.get("enabled"),
             data.get("cooldown_s"),
+            data.get("mod_only"),
             command_id
         )
     )

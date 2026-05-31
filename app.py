@@ -205,7 +205,6 @@ def callback():
             (user_id,)
         )
         conn.commit()
-        conn.close()
 
         # Register EventSub subscriptions for this broadcaster
         try:
@@ -220,7 +219,6 @@ def callback():
         beta_code       = session.get("beta_code")
 
         if not pending_user_id or not beta_code:
-            conn.close()
             flash("You need a beta access code to create an account.", "error")
             return redirect(url_for("registration.join"))
 
@@ -235,7 +233,6 @@ def callback():
         ).fetchone()
 
         if not valid_code:
-            conn.close()
             flash("Your beta code is no longer valid. Please contact us for a new one.", "error")
             return redirect(url_for("registration.join"))
 
@@ -278,7 +275,6 @@ def callback():
             (user_id, beta_code)
         )
         conn.commit()
-        conn.close()
 
         session.pop("pending_user_id", None)
         session.pop("beta_code", None)
@@ -291,8 +287,6 @@ def callback():
             app.logger.error(f"[EventSub] Registration failed: {e}")
 
     # ---- Build available accounts for session ---------------
-    conn = get_db_connection()
-
     own_channel = conn.execute(
         f"""
         SELECT c.id as channel_id, up.platform_display_name as display_name,
@@ -319,8 +313,6 @@ def callback():
         """,
         (user_id,)
     ).fetchall()
-
-    conn.close()
 
     available_accounts = []
 

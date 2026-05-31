@@ -25,7 +25,7 @@ def handle_disconnect():
         from flask_socketio import rooms
         room_name = f"channel_{channel_id}"
         # Stop relay — it's cheap to restart and prevents ghost connections
-        stop_relay(channel_id)
+        pass
 
 
 @socketio.on("join_overlay")
@@ -164,7 +164,6 @@ def handle_start_chat():
         (channel_id,)
     ).fetchone()
 
-    conn.close()
 
     if not row:
         emit("chat_status", {"status": "error", "error": "No Twitch account linked"})

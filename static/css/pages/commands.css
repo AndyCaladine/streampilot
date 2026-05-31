@@ -1,0 +1,228 @@
+/* =============================================================
+   commands.css — Commands page styles
+   ============================================================= */
+
+/* =============================================================
+   Command rows
+   ============================================================= */
+
+#commandsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.command-row {
+  display: grid;
+  grid-template-columns: 180px 1fr auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.command-row:last-child {
+  border-bottom: none;
+}
+
+.command-row__trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.command-trigger {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--bg-tertiary);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.command-row__response {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.command-row__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.command-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.command-meta-item svg {
+  stroke: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.command-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* =============================================================
+   Badges
+   ============================================================= */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.badge--mod {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* =============================================================
+   Toggle
+   ============================================================= */
+
+.toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.toggle__input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle__slider {
+  width: 36px;
+  height: 20px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: background 0.2s, border-color 0.2s;
+  position: relative;
+}
+
+.toggle__slider::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.toggle__input:checked + .toggle__slider {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  border-color: var(--accent);
+}
+
+.toggle__input:checked + .toggle__slider::after {
+  background: var(--accent);
+  transform: translateX(16px);
+}
+
+/* =============================================================
+   Modal extras
+   ============================================================= */
+
+.modal--lg {
+  width: min(640px, 90vw);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group--half {
+  min-width: 0;
+}
+
+.form-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.form-check input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.form-hint {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.form-hint code {
+  background: var(--bg-tertiary);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 11px;
+  color: var(--accent);
+}
+
+/* =============================================================
+   Responsive
+   ============================================================= */
+
+@media (max-width: 768px) {
+  .command-row {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+  }
+
+  .command-row__trigger { grid-column: 1; grid-row: 1; }
+  .command-row__response { grid-column: 1; grid-row: 2; }
+  .command-row__meta { grid-column: 2; grid-row: 1; }
+  .command-row__actions { grid-column: 2; grid-row: 2; }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
