@@ -108,10 +108,8 @@
     });
   }
 
-  function init() {
+function init() {
     if (!document.getElementById("dragHandleH")) return;
-    if (initialized) return;
-    initialized = true;
     loadPrefs();
     initHorizontalDrag();
     initVerticalDrag();
