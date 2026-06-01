@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS user_platforms (
     platform_avatar_url   TEXT,
     access_token          TEXT,
     refresh_token         TEXT,
+    token_exxpiy          TEXT,
     created_at            TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_login_at         TEXT,
     UNIQUE(platform, platform_user_id)

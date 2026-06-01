@@ -54,6 +54,7 @@ CREATE TABLE user_platforms (
     platform_avatar_url   TEXT,
     access_token          TEXT,
     refresh_token         TEXT,
+    token_expiry          TIMESTAMPTZ,
     created_at            TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_login_at         TIMESTAMPTZ,
     UNIQUE(platform, platform_user_id)

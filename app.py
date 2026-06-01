@@ -12,7 +12,7 @@ from routes.overlays import overlays_bp
 from routes.api import api_bp
 from routes.password import password_bp
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from utils.db import get_db_connection, close_db, placeholder
 
 
@@ -31,6 +31,11 @@ from routes import ws_events  # noqa: F401
 
 from utils.db import close_db
 app.teardown_appcontext(close_db)
+
+def _calc_expiry(expires_in):
+    if not expires_in:
+        return None
+    return datetime.now(timezone.utc) + timedelta(seconds=int(expires_in))
 
 
 @app.context_processor
@@ -120,7 +125,6 @@ def twitch_auth():
         "client_id":     app.config["TWITCH_CLIENT_ID"],
         "redirect_uri":  app.config["TWITCH_REDIRECT_URI"],
         "response_type": "code",
-        "force_verify":  "true",
         "scope": " ".join([
             "user:read:email",
             "chat:read",
@@ -187,6 +191,7 @@ def callback():
                 platform_avatar_url   = {p},
                 access_token          = {p},
                 refresh_token         = {p},
+                token_expiry          = {p},
                 last_login_at         = CURRENT_TIMESTAMP
             WHERE platform = 'twitch'
             AND platform_user_id = {p}
@@ -197,6 +202,7 @@ def callback():
                 twitch_user.get("profile_image_url"),
                 tokens["access_token"],
                 tokens.get("refresh_token"),
+                _calc_expiry(tokens.get("expires_in")),
                 twitch_user["id"],
             )
         )
@@ -243,8 +249,8 @@ def callback():
             INSERT INTO user_platforms
                 (user_id, platform, platform_user_id, platform_login,
                  platform_display_name, platform_avatar_url,
-                 access_token, refresh_token)
-            VALUES ({p}, 'twitch', {p}, {p}, {p}, {p}, {p}, {p})
+                 access_token, refresh_token, token_expiry)
+            VALUES ({p}, 'twitch', {p}, {p}, {p}, {p}, {p}, {p}, {p})
             """,
             (
                 user_id,
@@ -254,6 +260,7 @@ def callback():
                 twitch_user.get("profile_image_url"),
                 tokens["access_token"],
                 tokens.get("refresh_token"),
+                _calc_expiry(tokens.get("expires_in")),
             )
         )
 

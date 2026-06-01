@@ -2,8 +2,12 @@ from flask import session
 from flask_socketio import join_room, leave_room, emit
 from extensions import socketio
 from utils.db import get_db_connection, placeholder
+from utils.twitch import get_valid_token
 from utils.security import validate_overlay_token
 from utils.twitch_chat import start_relay, stop_relay, send_message, is_connected
+from flask_socketio import rooms
+
+
 
 
 @socketio.on("connect")
@@ -22,7 +26,6 @@ def handle_disconnect():
         # Only stop the relay if no other sessions are in this room.
         # Flask-SocketIO tracks room membership — we check via the
         # server object. If the room is now empty, kill the IRC relay.
-        from flask_socketio import rooms
         room_name = f"channel_{channel_id}"
         # Stop relay — it's cheap to restart and prevents ghost connections
         pass
@@ -137,11 +140,10 @@ def handle_start_chat():
     Looks up the channel's Twitch login and access token,
     then starts the IRC relay if not already running.
     """
-    channel_id   = session.get("active_channel_id")
-    access_token = session.get("access_token")
-    user_id      = session.get("user_id")
     
-
+    channel_id   = session.get("active_channel_id")
+    user_id      = session.get("user_id")
+    access_token = get_valid_token(user_id)
 
     if not channel_id or not access_token or not user_id:
         emit("chat_status", {"status": "error", "error": "Not authenticated"})

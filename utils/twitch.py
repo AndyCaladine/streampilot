@@ -1,9 +1,78 @@
 import requests
 from flask import current_app
+from datetime import datetime, timedelta, timezone
+from utils.db import get_db_connection, placeholder
 
 
 TWITCH_API_BASE  = "https://api.twitch.tv/helix"
 TWITCH_AUTH_BASE = "https://id.twitch.tv/oauth2"
+
+
+# =============================================================
+# Token management
+# =============================================================
+def get_valid_token(user_id):
+    """
+    Return a valid access token for the given user_id.
+    If the stored token is within 5 minutes of expiry, refresh it
+    silently and store the new tokens before returning.
+    """
+    conn = get_db_connection()
+    p = placeholder()
+
+    row = conn.execute(
+        f"""
+        SELECT access_token, refresh_token, token_expiry
+        FROM user_platforms
+        WHERE user_id = {p} AND platform = 'twitch'
+        """,
+        (user_id,)
+    ).fetchone()
+
+    if not row:
+        return None
+
+    access_token  = row["access_token"]
+    refresh_token = row["refresh_token"]
+    token_expiry  = row["token_expiry"]
+
+    # Check if token is missing or expiring within 5 minutes
+    needs_refresh = False
+    if not access_token:
+        needs_refresh = True
+    elif token_expiry:
+        if isinstance(token_expiry, str):
+            token_expiry = datetime.fromisoformat(token_expiry)
+        if token_expiry.tzinfo is None:
+            token_expiry = token_expiry.replace(tzinfo=timezone.utc)
+        if datetime.now(timezone.utc) >= token_expiry - timedelta(minutes=5):
+            needs_refresh = True
+
+    if needs_refresh and refresh_token:
+        new_tokens = refresh_access_token(refresh_token)
+        if new_tokens and "access_token" in new_tokens:
+            access_token = new_tokens["access_token"]
+            new_expiry = datetime.now(timezone.utc) + timedelta(seconds=int(new_tokens.get("expires_in", 14400)))
+            conn.execute(
+                f"""
+                UPDATE user_platforms
+                SET access_token  = {p},
+                    refresh_token = {p},
+                    token_expiry  = {p}
+                WHERE user_id = {p} AND platform = 'twitch'
+                """,
+                (
+                    access_token,
+                    new_tokens.get("refresh_token", refresh_token),
+                    new_expiry,
+                    user_id,
+                )
+            )
+            conn.commit()
+
+    return access_token
+
+
 
 
 # =============================================================

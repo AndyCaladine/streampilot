@@ -1,7 +1,13 @@
-from flask import Blueprint, jsonify, request, session
-from utils.db import get_db_connection, placeholder
+import requests
+
+from flask import Blueprint, jsonify, request, session, current_app
+from utils.db import get_db_connection, placeholder, get_db_type
 from utils.helpers import api_login_required, current_channel_id
 from extensions import socketio
+from utils.twitch import get_stream, get_follower_count, get_subscribers, get_valid_token
+from datetime import datetime, timezone, timedelta
+
+
 
 
 api_bp = Blueprint("api", __name__)
@@ -258,8 +264,9 @@ def test_celebration():
 @api_bp.route("/overlays/status", methods=["GET"])
 @api_login_required
 def overlay_status():
-    from utils.helpers import time_ago
-    from datetime import datetime, timedelta, timezone
+    access_token = get_valid_token(session.get("user_id"))
+    if not access_token:
+        return jsonify({"error": "No Twitch token in session"}), 401
 
     conn = get_db_connection()
     p = placeholder()
@@ -302,7 +309,6 @@ def overlay_status():
 @api_bp.route("/preferences", methods=["POST"])
 @api_login_required
 def save_preference():
-    from utils.db import get_db_type
     data = request.get_json()
     preference = data.get("preference", "").strip()
     value = data.get("value", "").strip()
@@ -361,10 +367,9 @@ def get_preferences():
 @api_bp.route("/stream/stats", methods=["GET"])
 @api_login_required
 def stream_stats():
-    from utils.twitch import get_stream, get_follower_count, get_subscribers
-    from datetime import datetime, timezone
 
-    access_token = session.get("access_token")
+
+    access_token = get_valid_token(session.get("user_id"))
     if not access_token:
         return jsonify({"error": "No Twitch token in session"}), 401
 
@@ -472,10 +477,9 @@ def save_dashboard_layout():
 @api_bp.route("/chat/user/<twitch_login>")
 @api_login_required
 def chat_user(twitch_login):
-    import requests
-    from flask import current_app
 
-    access_token = session.get("access_token")
+
+    access_token = get_valid_token(session.get("user_id"))
     if not access_token:
         return jsonify({"error": "No Twitch token"}), 401
 
@@ -568,7 +572,7 @@ def chat_user(twitch_login):
 @api_bp.route("/chat/profile", methods=["POST"])
 @api_login_required
 def save_chat_profile():
-    from utils.db import get_db_type
+
 
     data           = request.get_json()
     twitch_user_id = (data.get("twitch_user_id") or "").strip()
@@ -656,10 +660,9 @@ def delete_chat_profile(twitch_user_id):
 @api_bp.route("/chat/chatters", methods=["GET"])
 @api_login_required
 def get_chatters():
-    import requests
-    from flask import current_app
 
-    access_token = session.get("access_token")
+
+    access_token = get_valid_token(session.get("user_id"))
     if not access_token:
         return jsonify({"error": "No Twitch token"}), 401
 
