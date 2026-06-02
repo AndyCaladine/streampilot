@@ -113,14 +113,16 @@ CREATE TABLE IF NOT EXISTS team_members (
 -- Single use — marked used_at once accepted.
 -- -------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS invite_tokens (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    channel_id  INTEGER NOT NULL REFERENCES channels(id),
-    token       TEXT    NOT NULL UNIQUE,
-    role        TEXT    NOT NULL DEFAULT 'mod',
-    email       TEXT,
-    created_at  TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    expires_at  TEXT    NOT NULL,
-    used_at     TEXT
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    channel_id      INTEGER NOT NULL REFERENCES channels(id),
+    token           TEXT    NOT NULL UNIQUE,
+    role            TEXT    NOT NULL DEFAULT 'mod',
+    email           TEXT,
+    twitch_user_id  TEXT,
+    twitch_login    TEXT,
+    created_at      TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expires_at      TEXT    NOT NULL,
+    used_at         TEXT
 );
 
 

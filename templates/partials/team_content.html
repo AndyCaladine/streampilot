@@ -6,27 +6,96 @@
 <div class="page-header">
   <div class="page-header__left">
     <h1 class="page-title">Team</h1>
-    <p class="page-subtitle">Manage your mods and co-pilots</p>
-  </div>
-  <div class="page-header__actions">
-    <button class="btn btn--primary" id="inviteModBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-        <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-        <circle cx="8.5" cy="7" r="4"/>
-        <line x1="20" y1="8" x2="20" y2="14"/>
-        <line x1="23" y1="11" x2="17" y2="11"/>
-      </svg>
-      Invite Mod
-    </button>
+    <p class="page-subtitle">Manage your crew and co-pilots</p>
   </div>
 </div>
 
+<!-- ── Section 1: Current Crew ─────────────────────────────── -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card__header">
+    <h2 class="card__title">Current Crew</h2>
+    <span class="card__badge" id="activeCount">0</span>
+  </div>
+  <div class="card__body">
+    <div id="activeList">
+      <p class="empty-state">Loading crew...</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── Section 2: Pending Invites ──────────────────────────── -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card__header">
+    <h2 class="card__title">Pending Invites</h2>
+    <span class="card__badge" id="pendingCount">0</span>
+  </div>
+  <div class="card__body">
+    <div id="pendingList">
+      <p class="empty-state">No pending invites.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── Section 3: Import from Twitch ───────────────────────── -->
 <div class="card">
   <div class="card__header">
-    <h2 class="card__title">Your Team</h2>
-    <span class="card__badge" id="teamCount">0</span>
+    <h2 class="card__title">Import from Twitch</h2>
   </div>
-  <div class="card__body" id="teamList">
-    <p class="empty-state">No team members yet. Invite your first mod above.</p>
+  <div class="card__body">
+    <p style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.875rem;">
+      Shows your current Twitch mod list. Add mods via Twitch first, then import them here to give them a StreamPilot account.
+    </p>
+    <button class="btn btn--primary" id="importTwitchBtn">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+        <path d="M11.64 5.93h1.43v4.28h-1.43m3.93-4.28H17v4.28h-1.43M7 2L3.43 5.57v12.86h4.28V22l3.58-3.57h2.85L20.57 12V2m-1.43 9.29l-2.85 2.85h-2.86l-2.5 2.5v-2.5H7.71V3.43h11.43z"/>
+      </svg>
+      Load Twitch Mod List
+    </button>
+    <div id="twitchModList" style="margin-top: 1rem;"></div>
+  </div>
+</div>
+
+<!-- ── Invite Modal ─────────────────────────────────────────── -->
+<div class="modal-overlay" id="inviteModal" style="display:none;">
+  <div class="modal">
+    <div class="modal__header">
+      <h3 class="modal__title">Invite Mod</h3>
+      <button class="modal__close" id="inviteModalClose">&#x2715;</button>
+    </div>
+    <div class="modal__body">
+      <p style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.875rem;">
+        Inviting <strong id="inviteModalName"></strong> to join your crew.
+      </p>
+
+      <input type="hidden" id="inviteTwitchUserId">
+      <input type="hidden" id="inviteTwitchLogin">
+      <input type="hidden" id="inviteDisplayName">
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Role</label>
+        <select class="form-input" id="inviteRole">
+          <option value="mod">Mod — Crew</option>
+          <option value="co_pilot">Co-Pilot — Lead Mod</option>
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Email Address <span style="color: var(--text-muted); font-weight: normal;">(optional)</span></label>
+        <input type="email" class="form-input" id="inviteEmail" placeholder="Leave blank to generate a link instead">
+        <span class="form-hint">If provided, we'll send the invite link via email. Otherwise you'll get a link to share via Discord.</span>
+      </div>
+
+      <div id="inviteLinkResult" style="display:none; margin-bottom: 1rem;">
+        <label class="form-label">Invite Link</label>
+        <div style="display: flex; gap: 0.5rem;">
+          <input type="text" class="form-input" id="inviteLinkInput" readonly>
+          <button class="btn btn--secondary" id="copyLinkBtn">Copy</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--secondary" id="inviteModalCancel">Cancel</button>
+      <button class="btn btn--primary" id="inviteSubmitBtn">Send Invite</button>
+    </div>
   </div>
 </div>

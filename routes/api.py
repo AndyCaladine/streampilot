@@ -479,9 +479,10 @@ def save_dashboard_layout():
 def chat_user(twitch_login):
 
 
-    access_token = get_valid_token(session.get("user_id"))
+    user_id = session.get("user_id")
+    access_token = get_valid_token(user_id)
     if not access_token:
-        return jsonify({"error": "No Twitch token"}), 401
+        return jsonify({"error": "No Twitch token", "user_id": user_id}), 401
 
     client_id = current_app.config["TWITCH_CLIENT_ID"]
     headers   = {
@@ -662,9 +663,11 @@ def delete_chat_profile(twitch_user_id):
 def get_chatters():
 
 
-    access_token = get_valid_token(session.get("user_id"))
+    user_id = session.get("user_id")
+    access_token = get_valid_token(user_id)
+    print(f"[DEBUG twitch-mods] user_id={user_id} access_token={'OK' if access_token else 'NONE'}")
     if not access_token:
-        return jsonify({"error": "No Twitch token"}), 401
+        return jsonify({"error": "No Twitch token", "debug_user_id": user_id}), 401
 
     client_id = current_app.config["TWITCH_CLIENT_ID"]
     headers   = {
@@ -752,3 +755,236 @@ def get_chatters():
         "chatters": result,
         "total":    total,
     })
+
+
+# =============================================================
+# Team management
+# Fetch Twitch mod list, send invites, list current crew.
+# =============================================================
+
+@api_bp.route("/team/members", methods=["GET"])
+@api_login_required
+def get_team_members():
+    """
+    Returns two lists:
+    - active: mods who have accepted and have SP accounts
+    - pending: invite tokens not yet used
+    """
+    conn = get_db_connection()
+    p = placeholder()
+    channel_id = current_channel_id()
+
+    active = conn.execute(
+        f"""
+        SELECT tm.id, tm.role, tm.accepted_at,
+               u.display_name, u.avatar_url,
+               up.platform_login, up.platform_avatar_url
+        FROM team_members tm
+        JOIN users u ON u.id = tm.user_id
+        LEFT JOIN user_platforms up ON up.user_id = tm.user_id AND up.platform = 'twitch'
+        WHERE tm.channel_id = {p}
+        AND tm.accepted_at IS NOT NULL
+        ORDER BY tm.role DESC, u.display_name ASC
+        """,
+        (channel_id,)
+    ).fetchall()
+
+    pending = conn.execute(
+        f"""
+        SELECT id, token, role, email, twitch_login, twitch_user_id,
+               created_at, expires_at
+        FROM invite_tokens
+        WHERE channel_id = {p}
+        AND used_at IS NULL
+        AND expires_at > CURRENT_TIMESTAMP
+        ORDER BY created_at DESC
+        """,
+        (channel_id,)
+    ).fetchall()
+
+    conn.close()
+
+    return jsonify({
+        "active":  [dict(r) for r in active],
+        "pending": [dict(r) for r in pending],
+    })
+
+
+@api_bp.route("/team/twitch-mods", methods=["GET"])
+@api_login_required
+def get_twitch_mods():
+    """
+    Fetches the streamer's current mod list from Twitch Helix API.
+    Filters out mods who already have a pending invite or active SP account.
+    """
+    access_token = get_valid_token(session.get("user_id"))
+    if not access_token:
+        return jsonify({"error": "No Twitch token"}), 401
+
+    conn = get_db_connection()
+    p = placeholder()
+    channel_id = current_channel_id()
+
+    # Get broadcaster's Twitch ID
+    platform_row = conn.execute(
+        f"""
+        SELECT up.platform_user_id
+        FROM user_platforms up
+        JOIN channels c ON c.user_id = up.user_id
+        WHERE c.id = {p} AND up.platform = 'twitch'
+        """,
+        (channel_id,)
+    ).fetchone()
+
+    if not platform_row:
+        conn.close()
+        return jsonify({"error": "No Twitch platform linked"}), 404
+
+    broadcaster_id = platform_row["platform_user_id"]
+
+    # Fetch mods from Twitch
+    r = requests.get(
+        "https://api.twitch.tv/helix/moderation/moderators",
+        params={"broadcaster_id": broadcaster_id, "first": 100},
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Client-Id": current_app.config["TWITCH_CLIENT_ID"],
+        }
+    )
+
+    if not r.ok:
+        conn.close()
+        return jsonify({"error": "Failed to fetch mods from Twitch", "detail": r.text}), r.status_code
+
+    twitch_mods = r.json().get("data", [])
+
+    # Get already invited or active twitch_user_ids for this channel
+    existing_invites = conn.execute(
+        f"""
+        SELECT twitch_user_id FROM invite_tokens
+        WHERE channel_id = {p}
+        AND used_at IS NULL
+        AND expires_at > CURRENT_TIMESTAMP
+        """,
+        (channel_id,)
+    ).fetchall()
+
+    active_members = conn.execute(
+        f"""
+        SELECT up.platform_user_id
+        FROM team_members tm
+        JOIN user_platforms up ON up.user_id = tm.user_id AND up.platform = 'twitch'
+        WHERE tm.channel_id = {p}
+        """,
+        (channel_id,)
+    ).fetchall()
+
+    conn.close()
+
+    excluded = {r["twitch_user_id"] for r in existing_invites if r["twitch_user_id"]}
+    excluded |= {r["platform_user_id"] for r in active_members}
+
+    available = [
+        {
+            "twitch_user_id": m["user_id"],
+            "twitch_login":   m["user_login"],
+            "display_name":   m["user_name"],
+        }
+        for m in twitch_mods
+        if m["user_id"] not in excluded
+    ]
+
+    return jsonify({"mods": available})
+
+
+@api_bp.route("/team/invite", methods=["POST"])
+@api_login_required
+def invite_mod():
+    """
+    Creates an invite token for a Twitch mod.
+    Optionally sends an email via Resend or returns a link to copy.
+    """
+    import secrets
+    from utils.email import send_email
+
+    data           = request.get_json()
+    twitch_user_id = (data.get("twitch_user_id") or "").strip()
+    twitch_login   = (data.get("twitch_login")   or "").strip()
+    display_name   = (data.get("display_name")   or twitch_login).strip()
+    email          = (data.get("email")          or "").strip() or None
+    role           = (data.get("role")           or "mod").strip()
+    send_via_email = bool(email)
+
+    if not twitch_user_id or not twitch_login:
+        return jsonify({"error": "twitch_user_id and twitch_login are required"}), 400
+
+    if role not in ("mod", "co_pilot"):
+        role = "mod"
+
+    conn = get_db_connection()
+    p = placeholder()
+    channel_id = current_channel_id()
+
+    # Check not already invited
+    existing = conn.execute(
+        f"""
+        SELECT id FROM invite_tokens
+        WHERE channel_id = {p}
+        AND twitch_user_id = {p}
+        AND used_at IS NULL
+        AND expires_at > CURRENT_TIMESTAMP
+        """,
+        (channel_id, twitch_user_id)
+    ).fetchone()
+
+    if existing:
+        conn.close()
+        return jsonify({"error": "This mod already has a pending invite"}), 409
+
+    token      = secrets.token_urlsafe(32)
+    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+
+    conn.execute(
+        f"""
+        INSERT INTO invite_tokens
+            (channel_id, token, role, email, twitch_user_id, twitch_login, expires_at)
+        VALUES ({p}, {p}, {p}, {p}, {p}, {p}, {p})
+        """,
+        (channel_id, token, role, email, twitch_user_id, twitch_login, expires_at)
+    )
+    conn.commit()
+    conn.close()
+
+    invite_url = f"{request.host_url}join/mod/{token}"
+
+    if send_via_email:
+        send_email(
+            to=email,
+            subject="You've been invited to join StreamPilot",
+            body=f"Hi {display_name},\n\nYou've been invited to join StreamPilot as a mod.\n\nClick the link below to create your account:\n\n{invite_url}\n\nThis link expires in 7 days.\n\nSee you on the flight deck!\nThe StreamPilot Team"
+        )
+        return jsonify({"ok": True, "sent_via": "email"})
+
+    return jsonify({"ok": True, "sent_via": "link", "invite_url": invite_url})
+
+@api_bp.route("/team/invite/<int:invite_id>", methods=["DELETE"])
+@api_login_required
+def cancel_invite(invite_id):
+    """
+    Cancels a pending invite by marking it as expired.
+    Hard deletes the token row.
+    """
+    conn = get_db_connection()
+    p = placeholder()
+
+    conn.execute(
+        f"""
+        DELETE FROM invite_tokens
+        WHERE id = {p} AND channel_id = {p}
+        """,
+        (invite_id, current_channel_id())
+    )
+    conn.commit()
+    conn.close()
+
+    return jsonify({"ok": True})

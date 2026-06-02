@@ -316,5 +316,93 @@ def accept_invite(token):
         return redirect(url_for("index"))
 
     session["invite_token"] = token
-    flash("Please sign in with Twitch to accept your invitation.", "info")
-    return redirect(url_for("login"))
+    return redirect(url_for("registration.join_mod", token=token))
+
+@registration_bp.route("/join/mod/<token>", methods=["GET", "POST"])
+def join_mod(token):
+    """
+    Mod registration flow — triggered via invite link.
+    No beta code required. On completion, links the new user
+    to the inviting streamer's channel as a team member.
+    """
+    conn = get_db_connection()
+    p    = placeholder()
+
+    invite = conn.execute(
+        f"""
+        SELECT *
+        FROM invite_tokens
+        WHERE token = {p}
+        AND used_at IS NULL
+        AND expires_at > CURRENT_TIMESTAMP
+        """,
+        (token,)
+    ).fetchone()
+
+    if not invite:
+        conn.close()
+        flash("This invite link is invalid or has expired. Please contact your streamer for a new one.", "error")
+        return redirect(url_for("index"))
+
+    if request.method == "POST":
+        full_name         = request.form.get("full_name", "").strip()
+        chosen_name       = request.form.get("chosen_name", "").strip()
+        email             = request.form.get("email", "").strip().lower()
+        email_confirm     = request.form.get("email_confirm", "").strip().lower()
+        password          = request.form.get("password", "")
+        password_confirm  = request.form.get("password_confirm", "")
+        consent_data      = 1 if request.form.get("consent_data") else 0
+        consent_twitch    = 1 if request.form.get("consent_twitch") else 0
+
+        errors = []
+        if not full_name:
+            errors.append("Your full name is required.")
+        if not chosen_name:
+            errors.append("A display name is required.")
+        if not email or email != email_confirm:
+            errors.append("Email addresses do not match.")
+        if not password_meets_requirements(password):
+            errors.append("Password does not meet the requirements.")
+        if password != password_confirm:
+            errors.append("Passwords do not match.")
+        if not consent_data or not consent_twitch:
+            errors.append("You must accept the required consents to continue.")
+
+        if errors:
+            for error in errors:
+                flash(error, "error")
+            return render_template("join_mod.html", token=token, invite=dict(invite))
+
+        # Check email not already in use
+        existing = conn.execute(
+            f"SELECT id FROM users WHERE email = {p}",
+            (email,)
+        ).fetchone()
+
+        if existing:
+            flash("An account with that email already exists.", "error")
+            conn.close()
+            return render_template("join_mod.html", token=token, invite=dict(invite))
+
+        # Create the user account
+        password_hash = hash_password(password)
+        cur = conn.execute(
+            f"""
+            INSERT INTO users (email, full_name, chosen_name, display_name, tier, status)
+            VALUES ({p}, {p}, {p}, {p}, 'free', 'active')
+            """,
+            (email, full_name, chosen_name, chosen_name)
+        )
+        user_id = cur.lastrowid
+        conn.commit()
+        conn.close()
+
+        # Store in session for OAuth callback to pick up
+        session["pending_user_id"]  = user_id
+        session["invite_token"]     = token
+        session["pending_mod"]      = True
+
+        return redirect(url_for("twitch_auth"))
+
+    conn.close()
+    return render_template("join_mod.html", token=token, invite=dict(invite))

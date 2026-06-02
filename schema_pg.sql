@@ -80,14 +80,16 @@ CREATE TABLE team_members (
 );
 
 CREATE TABLE invite_tokens (
-    id          SERIAL PRIMARY KEY,
-    channel_id  INTEGER NOT NULL REFERENCES channels(id),
-    token       TEXT    NOT NULL UNIQUE,
-    role        TEXT    NOT NULL DEFAULT 'mod',
-    email       TEXT,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    expires_at  TIMESTAMPTZ NOT NULL,
-    used_at     TIMESTAMPTZ
+    id              SERIAL PRIMARY KEY,
+    channel_id      INTEGER NOT NULL REFERENCES channels(id),
+    token           TEXT    NOT NULL UNIQUE,
+    role            TEXT    NOT NULL DEFAULT 'mod',
+    email           TEXT,
+    twitch_user_id  TEXT,
+    twitch_login    TEXT,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expires_at      TIMESTAMPTZ NOT NULL,
+    used_at         TIMESTAMPTZ
 );
 
 CREATE TABLE beta_codes (

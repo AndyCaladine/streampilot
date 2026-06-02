@@ -135,6 +135,7 @@ def twitch_auth():
             "channel:manage:polls",
             "channel:manage:predictions",
             "channel:manage:raids",
+            "moderation:read",
             "moderator:read:followers",
             "moderator:read:chatters",
             "moderator:manage:chat_messages",
@@ -286,12 +287,41 @@ def callback():
         session.pop("pending_user_id", None)
         session.pop("beta_code", None)
 
-        # Register EventSub subscriptions for this broadcaster
-        try:
-            from utils.eventsub import register_subscriptions
-            register_subscriptions(twitch_user["id"])
-        except Exception as e:
-            app.logger.error(f"[EventSub] Registration failed: {e}")
+        if session.pop("pending_mod", None):
+            # ---- Mod invite flow — link to channel, mark token used ----
+            invite_token = session.pop("invite_token", None)
+            if invite_token:
+                invite = conn.execute(
+                    f"""
+                    SELECT * FROM invite_tokens
+                    WHERE token = {p}
+                    AND used_at IS NULL
+                    AND expires_at > CURRENT_TIMESTAMP
+                    """,
+                    (invite_token,)
+                ).fetchone()
+
+                if invite:
+                    conn.execute(
+                        f"""
+                        INSERT INTO team_members (channel_id, user_id, role, accepted_at)
+                        VALUES ({p}, {p}, {p}, CURRENT_TIMESTAMP)
+                        ON CONFLICT (channel_id, user_id) DO NOTHING
+                        """,
+                        (invite["channel_id"], user_id, invite["role"])
+                    )
+                    conn.execute(
+                        f"UPDATE invite_tokens SET used_at = CURRENT_TIMESTAMP WHERE token = {p}",
+                        (invite_token,)
+                    )
+                    conn.commit()
+        else:
+            # Register EventSub subscriptions for this broadcaster
+            try:
+                from utils.eventsub import register_subscriptions
+                register_subscriptions(twitch_user["id"])
+            except Exception as e:
+                app.logger.error(f"[EventSub] Registration failed: {e}")
 
     # ---- Build available accounts for session ---------------
     own_channel = conn.execute(
